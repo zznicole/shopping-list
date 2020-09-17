@@ -1,5 +1,5 @@
-import React, { component } from "react";
-import MuithemeProvider from "material-ui/styles/MuiThemeProvider";
+import React, { Component } from "react";
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import RaisedButton from "material-ui/RaisedButton";
 
 import Login from "./Login";
@@ -28,7 +28,7 @@ class Loginscreen extends Component {
 
   handleClick(event) {
     let loginmessage;
-    if ((this.state, isLogin)) {
+    if (this.state.isLogin) {
       let loginscreen = [];
       loginscreen.push(<Signup parentContext={this} />);
       loginmessage = "Already resgistered.Go to Login";
@@ -59,7 +59,7 @@ class Loginscreen extends Component {
           {this.state.loginmessage}
           <MuiThemeProvider>
             <div>
-              <RasiedButton
+              <RaisedButton
                 label={this.state.buttonLabel}
                 primary={true}
                 style={style}

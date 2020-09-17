@@ -4,6 +4,7 @@ import AppBar from "material-ui/AppBar";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import axios from "axios";
+import Login from "./Login";
 
 class Signup extends Component {
   constructor(props) {
@@ -36,7 +37,7 @@ class Signup extends Component {
       .post(apiBaseUrl + "/Signup", payload)
       .then(function (response) {
         console.log(response);
-        if (response.data.code == 200) {
+        if (response.data.code === 200) {
           var loginscreen = [];
           loginscreen.push(<Login parentContext={this} />);
           let loginmessage = "Not Signed up yet. Go to Sign up";

@@ -1,9 +1,12 @@
-import MuiThemeProvider from "material-ui/styles/MuiThemProvider";
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import AppBar from "material-ui/AppBar";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
+import React, { Component } from "react";
+import axios from "axios";
+import UploadScreen from "./UploadScreen";
 
-class Login extends Componet {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,10 +24,10 @@ class Login extends Componet {
     };
 
     axios
-      .post(apiBaseUrl + "login", content)
+      .post(apiBaseUrl + "login", payload)
       .then(function (response) {
         console.log(response);
-        if (response.data.code == 200) {
+        if (response.data.code === 200) {
           console.log("Login successfull");
           let uploadScreen = [];
           uploadScreen.push(
@@ -34,7 +37,7 @@ class Login extends Componet {
             loginPage: [],
             uploadScreen: uploadScreen,
           });
-        } else if (response.data.code == 204) {
+        } else if (response.data.code === 204) {
           console.log("Username password do not match");
           alert("username password do not match");
         } else {
