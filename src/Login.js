@@ -9,25 +9,24 @@ import UploadScreen from "./UploadScreen";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
 
-const styles = theme => ({
-	"@global": {
-		body: {
-			backgroundImage: "url('/logo192.png')",
-			backgroundRepeat: "no-repeat",
-			backgroundPosition: "center center",
-			backgroundSize: "cover",
-			backgroundAttachment: "fixed",
-			height: "100%"
-		},
-		html: {
-			height: "100%"
-		},
-		"#componentWithId": {
-			height: "100%"
-		}
-	}
+const styles = (theme) => ({
+  "@global": {
+    body: {
+      backgroundImage: "url('/grocery.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center center",
+      backgroundSize: "cover",
+      backgroundAttachment: "fixed",
+      height: "100%",
+    },
+    html: {
+      height: "100%",
+    },
+    "#componentWithId": {
+      height: "100%",
+    },
+  },
 });
-
 
 class Login extends Component {
   constructor(props) {
