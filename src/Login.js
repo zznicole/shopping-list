@@ -38,10 +38,10 @@ class Login extends Component {
   }
 
   handleClick(event) {
-    const apiBaseUrl = "http://localhost:4000/api/";
+    const apiBaseUrl = "/";
     let self = this;
     let payload = {
-      email: self.state.username,
+      userid: self.state.username,
       password: self.state.password,
     };
 
@@ -59,6 +59,9 @@ class Login extends Component {
             loginPage: [],
             uploadScreen: uploadScreen,
           });
+        } else if (response.data.code === 401) {
+          console.log("Error logging in");
+          alert("Error logging in");
         } else if (response.data.code === 204) {
           console.log("Username password do not match");
           alert("username password do not match");
