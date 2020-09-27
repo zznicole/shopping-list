@@ -18,7 +18,7 @@ class Signup extends Component {
   }
 
   handleClick(event) {
-    let apiBaseUrl = "http://localhost:4000/api/";
+    let apiBaseUrl = "/";
     console.log(
       "values",
       this.state.first_name,
@@ -28,13 +28,14 @@ class Signup extends Component {
     );
     let self = this;
     let payload = {
+      userid: this.state.email,
       first_name: this.state.first_name,
       last_name: this.state.last_name,
       email: this.state.email,
       password: this.state.password,
     };
     axios
-      .post(apiBaseUrl + "/Signup", payload)
+      .post(apiBaseUrl + "signup", payload)
       .then(function (response) {
         console.log(response);
         if (response.data.code === 200) {
