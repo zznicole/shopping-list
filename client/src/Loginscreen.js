@@ -20,7 +20,7 @@ class Loginscreen extends Component {
   componentWillMount() {
     let loginscreen = [];
     loginscreen.push(
-      <Login parentContext={this} appContext={this.props.parentContext} />
+      <Login parentContext={this} appContext={this.props.parentContext} />,
     );
     let loginmessage = "Not Sign up yet, Sign up Now";
     this.setState({ loginscreen: loginscreen, loginmessage: loginmessage });
