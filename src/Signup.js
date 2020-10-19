@@ -18,7 +18,8 @@ class Signup extends Component {
   }
 
   handleClick(event) {
-    let apiBaseUrl = "/";
+    const apiBaseUrl = "http://192.168.1.4/";
+    //    let apiBaseUrl = "/";
     console.log(
       "values",
       this.state.first_name,
@@ -61,7 +62,7 @@ class Signup extends Component {
       <div>
         <MuiThemeProvider>
           <div>
-            <AppBar title="Signup" />
+            <AppBar title="SIGN UP" />
             <TextField
               hintText="Enter your First Name"
               floatingLabelText="First Name"
@@ -93,6 +94,7 @@ class Signup extends Component {
                 this.setState({ password: newValue })
               }
             />
+            <br />
             <RaisedButton
               label="Submit"
               primary={true}

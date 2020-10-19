@@ -35,7 +35,7 @@ class Loginscreen extends Component {
       this.setState({
         loginscreen: loginscreen,
         loginmessage: loginmessage,
-        buttonLabel: "Login",
+        buttonLabel: "LOG IN",
         isLogin: false,
       });
     } else {
@@ -45,7 +45,7 @@ class Loginscreen extends Component {
       this.setState({
         loginscreen: loginscreen,
         loginmessage: loginmessage,
-        buttonLabel: "Signup",
+        buttonLabel: "SIGN UP",
         isLogin: true,
       });
     }
