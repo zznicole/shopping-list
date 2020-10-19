@@ -38,7 +38,7 @@ class Login extends Component {
   }
 
   handleClick(event) {
-    const apiBaseUrl = "/";
+    const apiBaseUrl = "http://192.168.1.4:80/";
     let self = this;
     let payload = {
       userid: self.state.username,
@@ -81,7 +81,7 @@ class Login extends Component {
         <MuiThemeProvider>
           <CssBaseline />
           <div>
-            <AppBar title="login" />
+            <AppBar title="LOG IN" />
             <TextField
               hintText="Enter your Username"
               floatingLabelText="Username"
@@ -100,7 +100,7 @@ class Login extends Component {
             />
             <br />
             <RaisedButton
-              label="Submit"
+              label="LOG IN"
               primary={true}
               style={style}
               onClick={(event) => this.handleClick(event)}
