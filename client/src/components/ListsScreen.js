@@ -2,6 +2,8 @@ import React from 'react';
 import { v4 } from 'uuid';
 import { useState } from 'react';
 import Lists from './Lists';
+import TobuyListScreen from './TobuyListScreen';
+import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
@@ -88,9 +90,11 @@ export default function ListScreen() {
       />
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar>
-          <Fab color="secondary" className={classes.fabButton}>
-            <Add />
-          </Fab>
+          <Link to='/TobuyListScreen'>
+            <Fab color="secondary" className={classes.fabButton}>
+              <Add />
+            </Fab>
+          </Link>
         </Toolbar>
       </AppBar>
     </div>

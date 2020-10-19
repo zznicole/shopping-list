@@ -1,7 +1,10 @@
 import React, { Component } from "react";
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import "./App.css";
 import Loginscreen from "./Loginscreen";
+import ListsScreen from './components/ListsScreen';
+import TobuyListScreen from './components/TobuyListScreen';
 // import injectTapEventPlugin from "react-tap-event-plugin";
 
 class App extends Component {
@@ -20,10 +23,17 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        {this.state.loginPage}
-        {this.state.uploadScreen}
-      </div>
+      <BrowserRouter>
+        {/* <div className="App">
+          {this.state.loginPage}
+          {this.state.uploadScreen}
+        </div> */}
+        <Switch>
+          <Route path="/" exact component={Loginscreen} />
+          <Route path="/ListsScreen" component={ListsScreen} />
+          <Route path="/TobuyListScreen" component={TobuyListScreen} />
+        </Switch>
+      </BrowserRouter>
     );
   }
 }

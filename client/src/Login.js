@@ -5,6 +5,9 @@ import TextField from "material-ui/TextField";
 import React, { Component } from "react";
 import axios from "axios";
 import UploadScreen from "./UploadScreen";
+import ListsScreen from './components/ListsScreen';
+import { Link } from 'react-router-dom';
+
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
@@ -99,12 +102,14 @@ class Login extends Component {
               }
             />
             <br />
-            <RaisedButton
-              label="LOG IN"
-              primary={true}
-              style={style}
-              onClick={(event) => this.handleClick(event)}
-            />
+            <Link to='/ListsScreen'>
+              <RaisedButton
+                label="LOG IN"
+                primary={true}
+                style={style}
+                onClick={(event) => this.handleClick(event)}
+              />
+            </Link>
           </div>
         </MuiThemeProvider>
       </div>
