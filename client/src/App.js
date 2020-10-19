@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 
-// import logo from './logo.svg';
-
 import "./App.css";
 import Loginscreen from "./Loginscreen";
 // import injectTapEventPlugin from "react-tap-event-plugin";
