@@ -7,14 +7,22 @@ import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+import { Add, CenterFocusStrong } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
+  header: {
+    fontSize: 24,
+    backgroundColor: '#00bcd4',
+    color: '#ffffff',
+    padding: 20,
+  },
+  
   appBar: {
     // position: 'fixed',
     // color: 'primary',
     top: 'auto',
     bottom: 0,
+    backgroundColor: '#00bcd4',
   },
 
   fabButton: {
@@ -81,7 +89,7 @@ export default function ListScreen() {
   return (
     <div>
       <Paper square >
-        <Typography variant="h5" align="center">My shopping lists</Typography>
+        <Typography variant="h5" align="center" className={classes.header}>My Shopping Lists</Typography>
       </Paper>
       <Lists
         lists={lists}

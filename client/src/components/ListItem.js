@@ -1,4 +1,5 @@
 import React from 'react';
+import ContentEditable from 'react-contenteditable';
 import { Container, Card, Typography, IconButton } from '@material-ui/core';
 import { Check, Delete } from '@material-ui/icons';
 
@@ -24,6 +25,7 @@ export default function ListItem({
               <Check style={{ color: 'green' }} />
             </IconButton>
             {title}
+            <br />
             {subtitle}
             <IconButton style={{ float: 'right' }} onClick={delList}>
               <Delete style={{ color: 'red' }} />

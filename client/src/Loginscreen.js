@@ -13,7 +13,7 @@ class Loginscreen extends Component {
       password: "",
       Loginscreen: [],
       loginmessage: "",
-      buttonLabel: "Sign up",
+      buttonLabel: "SIGN UP",
       isLogin: true,
     };
   }
