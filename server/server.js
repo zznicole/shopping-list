@@ -4,6 +4,7 @@ const url = require('url');
 const querystring = require('querystring');
 const dboo = require('dboo');
 const https = require('https');
+var cors = require('cors');
 const fs = require('fs');
 var cookieParser = require('cookie-parser')
 
@@ -23,6 +24,11 @@ let app = express();
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors({
+  'allowedHeaders': ['Content-Type'],
+  'origin': '*',
+  'preflightContinue': true
+}));
 
 let sslOptions = {
    key: fs.readFileSync(sslConfig.key),
