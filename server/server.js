@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const url = require('url');
 const querystring = require('querystring');
-const dboo = require('dboo.node');
+const dboo = require('dboo');
 const https = require('https');
 const fs = require('fs');
 var cookieParser = require('cookie-parser')
@@ -14,6 +14,7 @@ const config = require('config');
 
 dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
+sslConfig = config.get('ssl');
 
 const odb = new dboo.ODB();
 odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
@@ -24,11 +25,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 let sslOptions = {
-   key: fs.readFileSync('./certs/selfsigned.key'),
-   cert: fs.readFileSync('./certs/selfsigned.crt')
+   key: fs.readFileSync(sslConfig.key),
+   cert: fs.readFileSync(sslConfig.cert)
 };
 
-let serverHttps = https.createServer(sslOptions, app).listen(hostConfig.port);
+function createServer() {
+  if (hostConfig.useSSL == false) {
+    const http = require('http');
+    let serverHttp = http.createServer(app).listen(hostConfig.port);
+  
+    return serverHttp;
+  }
+  let serverHttps = https.createServer(sslOptions, app).listen(hostConfig.port);
+  return serverHttps;
+}
+let server = createServer();
 console.log("Listening to port " + hostConfig.port)
 
 app.use('/', express.static('../client/build/'))

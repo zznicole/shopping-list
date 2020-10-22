@@ -8,9 +8,13 @@
     "webUserPwd": "123"
   },
   "hostConfig": {
-    "URL": "https://localhost",
+    "URL": "http://localhost:3000",
     "host": "localhost",
-    "port": "443"
+    "port": "3000",
+    "useSSL": false,
+    "URL-hide": "https://localhost",
+    "host-hide": "localhost",
+    "port-hide": "443"
   },
   "emailConfig": {
     "fromAddress": "myshoppinglist@clear-objects.com",
@@ -22,8 +26,8 @@
         "user": "myshoppinglist@clear-objects.com",
         "pass": "x6CwqhEyBa3rm7AJW3VTFGWD"
       },
-      "tls": { 
-          "rejectUnauthorized": false 
+      "tls": {
+        "rejectUnauthorized": false
       }
     },
     "testEmailAddress": "test_shoppinglist@clear-objects.com",
@@ -34,5 +38,9 @@
       "port": 143,
       "starttls": true
     }
+  },
+  "ssl": {
+    "key": "./certs/selfsigned.key",
+    "cert": "./certs/selfsigned.crt"
   }
 }

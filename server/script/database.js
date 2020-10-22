@@ -12,7 +12,7 @@
 //    node src/database.js updateTypes  <myshoppinglist password>
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const dboo = require('dboo.node');
+const dboo = require('dboo');
 const config = require('config');
 
 dbConfig = config.get('dbConfig');
@@ -32,8 +32,8 @@ function createDatabase(rootPwd, userPwd) {
   
   console.log("Creating group, db and web user:");
   console.log("Group: " + dbGroup);
-  console.log("Database: " + dbGroup);
-  console.log("User id: " + userPwd);
+  console.log("Database: " + dbName);
+  console.log("User id: " + webUserName);
   odb.create_group(dbGroup);
   odb.create_database(dbName, dbGroup);
   odb.create_user(webUserName, userPwd, dbGroup);
@@ -47,6 +47,7 @@ function createDatabase(rootPwd, userPwd) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function defineTypes(userPwd) {
   const user = require('../src/user.js');
+  const list = require('../src/lists.js');
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, userPwd);
 
@@ -55,6 +56,12 @@ function defineTypes(userPwd) {
   odb.define(user.User);
   console.log(user.UserPassword);
   odb.define(user.UserPassword);
+  console.log(list.Category);
+  odb.define(list.Category);
+  console.log(list.Item);
+  odb.define(list.Item);
+  console.log(list.ShoppingList);
+  odb.define(list.ShoppingList);
   console.log("Done");
 }
 

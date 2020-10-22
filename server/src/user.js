@@ -1,4 +1,4 @@
-const dboo = require('dboo.node');
+const dboo = require('dboo');
 const crypto = require('crypto');
 const verification = require('./verification.js');
 const lists = require('./lists.js');
@@ -40,8 +40,8 @@ dboo.class(User,
    {"emailAddress": dboo.string},
    {"firstName": dboo.string},
    {"lastName": dboo.string},
-   {"permissions": dboo.sequence(dboo.string)},
-   {"lists": dboo.sequence(lists.ShoppingList)}]
+   {"permissions": dboo.array(dboo.string)},
+   {"lists": dboo.array(lists.ShoppingList)}]
 );
 
 
