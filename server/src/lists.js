@@ -1,4 +1,4 @@
-const dboo = require('dboo.node');
+const dboo = require('dboo');
 
 class Category
 {
@@ -49,7 +49,7 @@ exports.ShoppingList = ShoppingList;
 dboo.class(ShoppingList,
   [{"summary": dboo.string},
    {"description": dboo.string},
-   {"items": dboo.sequence(Item)},
+   {"items": dboo.array(Item)},
    {"done": dboo.bool}]
 );
 

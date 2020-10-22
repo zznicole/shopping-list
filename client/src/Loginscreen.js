@@ -31,7 +31,7 @@ class Loginscreen extends Component {
     if (this.state.isLogin) {
       let loginscreen = [];
       loginscreen.push(<Signup parentContext={this} />);
-      loginmessage = "Already registered. Go to Login";
+      loginmessage = "Already registered? Go to Login!";
       this.setState({
         loginscreen: loginscreen,
         loginmessage: loginmessage,
@@ -41,7 +41,7 @@ class Loginscreen extends Component {
     } else {
       var loginscreen = [];
       loginscreen.push(<Login parentContext={this} />);
-      loginmessage = "Not registered yet. Go to Signup";
+      loginmessage = "Not registered yet? Go to Signup!";
       this.setState({
         loginscreen: loginscreen,
         loginmessage: loginmessage,

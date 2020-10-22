@@ -41,7 +41,7 @@ class Login extends Component {
   }
 
   handleClick(event) {
-    const apiBaseUrl = "http://192.168.1.4:80/";
+    const apiBaseUrl = "http://localhost:3000/";
     let self = this;
     let payload = {
       userid: self.state.username,
