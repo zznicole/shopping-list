@@ -1,4 +1,4 @@
-const dboo = require('dboo.node');
+const dboo = require('dboo');
 const config = require('config');
 const user = require('../src/user.js');
 
