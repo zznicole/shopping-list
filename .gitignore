@@ -27,3 +27,4 @@ server/node_modules
 server/certs
 client/build
 .idea
+server/config/default.json
