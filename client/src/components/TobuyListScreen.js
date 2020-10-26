@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#00bcd4',
     color: '#ffffff',
     padding: 20,
+
   },
   
   appBar: {
@@ -74,7 +75,7 @@ export default function TobuyListScreen() {
       <Paper square>
         <Typography variant="h5" align="center" padding="16" className={classes.header}>Grocery List</Typography>
       </Paper>
-      <TobuyForm addTobuy={addTobuy} />
+      <TobuyForm addTobuy={addTobuy} position="fixed" />
       <TobuyList
         tobuys={tobuys}
         checkTobuy={checkTobuy}
@@ -82,7 +83,7 @@ export default function TobuyListScreen() {
       />
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar>
-          <Link to='/ListsScreen'>
+          <Link to='/lists'>
             <Fab color="secondary" className={classes.fabButton}>
               <Home />
             </Fab>

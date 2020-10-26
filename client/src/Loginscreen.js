@@ -13,7 +13,7 @@ class Loginscreen extends Component {
       password: "",
       Loginscreen: [],
       loginmessage: "",
-      buttonLabel: "SIGN UP",
+      buttonLabel: "Sign up",
       isLogin: true,
     };
   }
@@ -31,7 +31,7 @@ class Loginscreen extends Component {
     if (this.state.isLogin) {
       let loginscreen = [];
       loginscreen.push(<Signup parentContext={this} />);
-      loginmessage = "Already registered? Go to Login!";
+      loginmessage = "Already registered. Go to Login";
       this.setState({
         loginscreen: loginscreen,
         loginmessage: loginmessage,
@@ -41,7 +41,7 @@ class Loginscreen extends Component {
     } else {
       var loginscreen = [];
       loginscreen.push(<Login parentContext={this} />);
-      loginmessage = "Not registered yet? Go to Signup!";
+      loginmessage = "Not registered yet. Go to Signup";
       this.setState({
         loginscreen: loginscreen,
         loginmessage: loginmessage,
@@ -53,9 +53,11 @@ class Loginscreen extends Component {
 
   render() {
     return (
-      <div className="loginscreen">
+      <div className="loginscreen" >
         {this.state.loginscreen}
-        <div>
+        <div style={{
+        position: 'absolute', left: '50%', top: '80%',
+        transform: 'translate(-50%, -50%)'}} >
           {this.state.loginmessage}
           <MuiThemeProvider>
             <div>

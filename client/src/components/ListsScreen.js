@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
-import { Add, CenterFocusStrong } from '@material-ui/icons';
+import { Add } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#00bcd4',
     color: '#ffffff',
     padding: 20,
+    width: '100%',
+    position: 'fixed',
+    zIndex: 1,
+    top: 0
   },
   
   appBar: {
@@ -50,7 +54,27 @@ export default function ListScreen() {
       isCompleted: false},
 
     {id: v4(),
+      title: "list three",
+      subtitle: "nice shirts, wool outwear",
+      isCompleted: false},
+
+    {id: v4(),
+      title: "list three",
+      subtitle: "nice shirts, wool outwear",
+      isCompleted: false},
+
+    {id: v4(),
+      title: "list one",
+      subtitle: "Tomatoes, patatoes",
+      isCompleted: false},
+      
+    {id: v4(),
       title: "list two",
+      subtitle: "house hallway stool, binocollar",
+      isCompleted: false},
+
+    {id: v4(),
+      title: "list three",
       subtitle: "nice shirts, wool outwear",
       isCompleted: false},
   ]);
@@ -88,7 +112,7 @@ export default function ListScreen() {
 
   return (
     <div>
-      <Paper square >
+      <Paper square position="fixed" >
         <Typography variant="h5" align="center" className={classes.header}>My Shopping Lists</Typography>
       </Paper>
       <Lists
@@ -98,7 +122,7 @@ export default function ListScreen() {
       />
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar>
-          <Link to='/TobuyListScreen'>
+          <Link to='/list'>
             <Fab color="secondary" className={classes.fabButton}>
               <Add />
             </Fab>

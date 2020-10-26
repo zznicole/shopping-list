@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import "./App.css";
 import Loginscreen from "./Loginscreen";
@@ -30,8 +30,11 @@ class App extends Component {
         </div> */}
         <Switch>
           <Route path="/" exact component={Loginscreen} />
-          <Route path="/ListsScreen" component={ListsScreen} />
-          <Route path="/TobuyListScreen" component={TobuyListScreen} />
+
+          <Route path="/lists" component={ListsScreen} isPrivate />
+          <Route path="/list" component={TobuyListScreen} isPrivate/>
+
+          <Route component={Loginscreen} />
         </Switch>
       </BrowserRouter>
     );
@@ -41,41 +44,5 @@ class App extends Component {
 const style = {
   margin: 15,
 };
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         {/* <img src={logo} className="App-logo" alt="logo" /> */}
-
-//         <h1>Shopping List</h1>
-//         <Button className="signup-btn" variant="contained" color="secondary">
-//           Sign Up
-//         </Button>
-//         <Button
-//           className="login-btn"
-//           variant="outlined"
-//           color="primary"
-//           onClick={(event) => {
-//             Login;
-//           }}
-//         >
-//           Log In
-//         </Button>
-//         {/* <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a> */}
-//       </header>
-//     </div>
-//   );
-// }
 
 export default App;

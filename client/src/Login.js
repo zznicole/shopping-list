@@ -4,9 +4,8 @@ import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import React, { Component } from "react";
 import axios from "axios";
-import UploadScreen from "./UploadScreen";
-import ListsScreen from './components/ListsScreen';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
+
 
 
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -42,8 +41,8 @@ class Login extends Component {
 
   handleClick(event) {
     const apiBaseUrl = "http://localhost:3001/";
-    let self = this;
-    let payload = {
+    const self = this;
+    const payload = {
       userid: self.state.username,
       password: self.state.password,
     };
@@ -53,15 +52,8 @@ class Login extends Component {
       .then(function (response) {
         console.log(response);
         if (response.data.code === 200) {
-          console.log("Login successfull");
-          let uploadScreen = [];
-          uploadScreen.push(
-            <UploadScreen appContext={this.props.appContext} />
-          );
-          this.props.appContext.setState({
-            loginPage: [],
-            uploadScreen: uploadScreen,
-          });
+          console.log("Login successful");
+          self.props.history.push('/lists');
         } else if (response.data.code === 401) {
           console.log("Error logging in");
           alert("Error logging in");
@@ -83,33 +75,43 @@ class Login extends Component {
       <div>
         <MuiThemeProvider>
           <CssBaseline />
-          <div>
+          <div >
             <AppBar title="LOG IN" />
-            <TextField
-              hintText="Enter your Username"
-              floatingLabelText="Username"
-              onChange={(event, newValue) =>
-                this.setState({ username: newValue })
-              }
-            />
-            <br />
-            <TextField
-              type="password"
-              hintText="Enter your Password"
-              floatingLabelText="Password"
-              onChange={(event, newValue) =>
-                this.setState({ password: newValue })
-              }
-            />
-            <br />
-            <Link to='/ListsScreen'>
+            <div style={{
+        position: 'absolute', left: '50%', top: '40%',
+        transform: 'translate(-50%, -50%)'
+    }}>
+              <TextField
+                hintText="Enter your Username"
+                id="standard-basic"
+                label="Standard"
+                floatingLabelText="Username"
+                autoComplete="off"
+                autoFocus
+                onChange={(event, newValue) =>
+                  this.setState({ username: newValue })
+                }
+              />
+              <br />
+              <TextField
+                type="password"
+                hintText="Enter your Password"
+                id="standard-basic"
+                label="Standard"
+                floatingLabelText="Password"
+                autoComplete="off"
+                onChange={(event, newValue) =>
+                  this.setState({ password: newValue })
+                }
+              />
+              <br />
               <RaisedButton
                 label="LOG IN"
                 primary={true}
                 style={style}
                 onClick={(event) => this.handleClick(event)}
               />
-            </Link>
+            </div>
           </div>
         </MuiThemeProvider>
       </div>
@@ -118,4 +120,5 @@ class Login extends Component {
 }
 
 const style = { margin: 15 };
-export default withStyles(styles)(Login);
+export default withStyles(styles)(withRouter(Login));
+
