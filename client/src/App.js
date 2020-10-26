@@ -32,7 +32,7 @@ class App extends Component {
           <Route path="/" exact component={Loginscreen} />
 
           <Route path="/lists" component={ListsScreen} isPrivate />
-          <Route path="/list" component={TobuyListScreen} isPrivate/>
+          <Route path="/list/:listid" component={TobuyListScreen} isPrivate/>
 
           <Route component={Loginscreen} />
         </Switch>

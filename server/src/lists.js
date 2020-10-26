@@ -13,6 +13,14 @@ dboo.class(Category,
    {"description": dboo.string}]
 );
 
+function createCategory(summary, description = "")
+{
+  let i = new Category();
+  i.summary = summary;
+  i.description = description;
+  return i;
+}
+
 class Item
 {
   summary = "";
@@ -29,6 +37,15 @@ dboo.class(Item,
    {"category": Category},
    {"done": dboo.bool}]
 );
+
+function createItem(summary, description, category)
+{
+  let i = new Item();
+  i.summary = summary;
+  i.description = description;
+  i.category = category;
+  return i;
+}
 
 class ShoppingList
 {
@@ -57,3 +74,5 @@ function createList(summary, description)
 }
 
 exports.createList = createList;
+exports.createItem = createItem;
+exports.createCategory = createCategory;

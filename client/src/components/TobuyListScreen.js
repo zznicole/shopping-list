@@ -1,14 +1,17 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { v4 } from 'uuid';
 import { useState } from 'react';
 import TobuyList from './TobuyList';
 import TobuyForm from './TobuyForm';
 import ListsScreen from './ListsScreen';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
 import { Home } from '@material-ui/icons'
+import axios from "axios";
+
+const apiBaseUrl = "/";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -37,39 +40,98 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+let fetchingList = false;
+
 export default function TobuyListScreen() {
   const classes = useStyles();
   const [tobuys, setTobuys] = useState([]);
-
-  // mark as completed
-  const checkTobuy = (id) => {
-    console.log(id);
-    setTobuys(
-      tobuys.map((tobuy) => {
-        if (tobuy.id === id) {
-          tobuy.isCompleted = !tobuy.isCompleted;
+  const { listid } = useParams();
+  
+  function fetchList() {
+    axios
+      .get(apiBaseUrl + "getlist?listid=" + listid)
+      .then(function (response) {
+        try {
+          console.log(response.data.code);
+          if (response.data.code === 200) {
+            console.log(response.data.result);
+            
+            fetchingList = true;
+            setTobuys(response.data.result.items);
+          }
+        } catch (e) {
+          console.log(e);
         }
-        console.log(tobuy.isCompleted);
-        return tobuy;
-      }),
-    );
-  };
-   
-  //delete a tobuy
-  const deleteTobuy = (id) => {
-    setTobuys(tobuys.filter((tobuy) => tobuy.id !== id));
-  };
-
-  // Add a tobuy
-  const addTobuy = (text) => {
-    const newTobuy = {
-      id: v4(),
-      title: text,
-      isCompleted: false,
-    };
-    setTobuys([...tobuys, newTobuy]);
-  };
-
+      });
+  }
+  
+  useEffect(() => {
+    if (!fetchingList) {
+      fetchList();
+    } else {
+      fetchingList = false;
+    }
+  });
+  
+  function addTobuy(text) {
+    axios
+      .post(apiBaseUrl + "newitem", {listid: listid, summary: text, description: ""})
+      .then(function (response) {
+        try {
+          console.log(response.data.code);
+          if (response.data.code === 200) {
+            console.log(response.data);
+            
+            fetchList();
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
+  }
+  
+  function deleteTobuy(id) {
+    console.log(id);
+    axios
+      .post(apiBaseUrl + "rmitem", {listid: listid, itemid: id})
+      .then(function (response) {
+        try {
+          console.log(response.data.code);
+          if (response.data.code === 200) {
+            console.log(response.data);
+            
+            fetchList();
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
+  }
+  
+  function checkTobuy(id) {
+    console.log(id);
+    for (let i = 0; i < tobuys.length; ++i) {
+      let tobuy = tobuys[i];
+      if (tobuy.itemid == id) {
+        axios
+          .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
+          .then(function (response) {
+            try {
+              console.log(response.data.code);
+              if (response.data.code === 200) {
+                console.log(response.data);
+          
+                fetchList();
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          });
+        break;
+      }
+    }
+  }
+  
   return (
     <div>
       <Paper square>

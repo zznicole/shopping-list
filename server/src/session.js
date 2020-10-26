@@ -48,6 +48,11 @@ function handleSession(req, res) {
   return s;
 }
 
+function clearSession(req, res) {
+  delete sessions[sessionid];
+}
+
+exports.clearSession = clearSession;
 exports.handleSession = handleSession;
 
 function getAllSessions() {

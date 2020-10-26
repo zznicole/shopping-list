@@ -10,15 +10,17 @@ export default function ListItem({
   id,
   isCompleted,
   deleteList,
+  goToList,
 }) {
   const markCompleted = () => checkList(id);
+  const clickOnList = () => goToList(id);
   const listStyle = isCompleted
     ? { textDecoration: 'line-through' }
     : { textDecoration: 'none' };
   const delList = () => deleteList(id);
   return (
     <div>
-      <Container>
+      <Container onClick={clickOnList}>
         <Typography variant="h5" component="h2" style={listStyle}>
           <Card variant="contained" style={{ marginTop: 5 }}>
             <IconButton onClick={markCompleted}>

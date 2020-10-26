@@ -18,6 +18,16 @@ sslConfig = config.get('ssl');
 const odb = new dboo.ODB();
 odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
 
+let categories = [];
+let defaultCategory;
+odb.query(categories, "select<Category>(eq(summary,'default'))");
+if (categories.length == 0) {
+  defaultCategory = lists.createCategory("default");
+  odb.commit(defaultCategory);
+} else {
+  defaultCategory = categories[0];
+}
+
 let app = express();
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,6 +62,10 @@ app.use('/static', express.static('../client/build/static'))
 app.get('/newsession', async function(req, res) {
   s = session.handleSession(req, res);
   res.json({sessionId: s.sessionId});
+});
+
+app.get('/logout', async function(req, res) {
+  session.clearSession(req, res);
 });
 
 app.post('/login', async function(req, res) {
@@ -138,12 +152,18 @@ app.get('/listsessions', async function(req, res) {
 });
 
 app.get('/userlists', async function(req, res) {
-  console.log('/userlists');
   let s = session.handleSession(req, res);
   if (s.user) {
     results = [];
     for (let list of s.user.lists) {
-      results.push({id: odb.objectid(list), title: list.summary, subtitle: odb.objectid(list), isCompleted: list.done, itemcount: list.items.length});
+      let summary = "";
+      for (let i = 0; i < list.items.length && i < 10; ++i) {
+        if (i > 0) {
+          summary = summary + ", ";
+        }
+        summary = summary + list.items[i].summary;
+      }
+      results.push({id: odb.objectid(list), title: list.summary, subtitle: summary, isCompleted: list.done, itemcount: list.items.length});
     }
     res.json({sessionId: s.sessionId, code: 200, result: results});
     res.status(200);
@@ -189,38 +209,94 @@ app.get('/getlist', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.query.listid);
-    results = {listid: req.query.listid, list: list };
+    let items = [];
+    for (let item of list.items) {
+      items.push({itemid: odb.objectid(item), title: item.summary, isCompleted: item.done});
+    }
+    results = {listid: req.query.listid, summary: list.summary, items: items };
     res.json({sessionId: s.sessionId, code: 200, result: results});
   } else {
     res.json({sessionId: s.sessionId, code: 401, message: "no access"});
   }
 });
 
-app.post('/newitem', async function(req, res) {
-  s = session.handleSession(reqreq, res);
-  if (s.user) {
-    let list = odb.object(req.body.listid);
-    let item = lists.createItem(req.body.summary, req.body.description);
-    let itemid = odb.objectid(item);
-    results = {listid: req.body.listid, list: list};
-    res.json({sessionId: s.sessionId, code: 200, listId: req.body.listid, list: list, newItemId: itemid});
-  } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
-  }
-});
-
-app.get('/sharelist', async function(req, res) {
+app.post('/editlist', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.query.listid);
-    let otherUserId = odb.object(req.query.userId);
+    list.summary = req.body.title;
+    list.description = "";
+    list.done = req.body.isCompleted;
+    odb.commit(item);
+    
+    res.json({code: 200, itemid: itemid});
+  } else {
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+app.post('/newitem', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.body.listid);
+    let item = lists.createItem(req.body.summary, req.body.description, defaultCategory);
+    list.items.push(item);
+    odb.commit([item, list]);
+    let itemid = odb.objectid(item);
+    results = {listid: req.body.listid, list: list};
+    res.json({code: 200, listId: req.body.listid, newItemId: itemid});
+  } else {
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+app.post('/rmitem', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user) {
+    console.log("/rmitem: ");
+    console.log(req.body);
+    let list = odb.object(req.body.listid);
+    let item = odb.object(req.body.itemid);
+    for (let i = 0; i < list.items.length; ++i) {
+      if (item === list.items[i]) {
+        list.items.splice(i, 1);
+        break;
+      }
+    }
+    odb.commit(list);
+    res.json({code: 200});
+  } else {
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+app.post('/edititem', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let item = odb.object(req.body.itemid);
+    item.summary = req.body.summary;
+    item.description = "";
+    item.done = req.body.isCompleted;
+    odb.commit(item);
+
+    res.json({code: 200, itemid: req.body.itemid});
+  } else {
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+app.post('/sharelist', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.body.listid);
+    let otherUserId = odb.object(req.body.userid);
     let otherUser = users.findUser(otherUserId);
     if (otherUser) {
       otherUser.lists.push(list);
       odb.commit(otherUser);
       res.json({sessionId: s.sessionId, code: 200, message: list.description + " shared with " + otherUserId});
     } else {
-      res.json({sessionId: s.sessionId, code: 404, message: "Other user ('" + otherUserId + "') not found"});
+      res.json({sessionId: s.sessionId, code: 404, message: "User ('" + otherUserId + "') not found"});
     }
   } else {
     res.json({sessionId: s.sessionId, code: 401, message: "no access"});

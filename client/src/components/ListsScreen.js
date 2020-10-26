@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import axios from "axios";
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -48,7 +49,8 @@ export default function ListScreen() {
   const [lists, setLists] = useState([]);
   
   const apiBaseUrl = "/";
-
+  const history = useHistory();
+  
   function fetchLists() {
     axios
       .get(apiBaseUrl + "userlists")
@@ -120,8 +122,9 @@ export default function ListScreen() {
           console.log(response.data.code);
           if (response.data.code === 200) {
             console.log(response.data.result);
+            history.push('/list/'+response.data.result.listid);
   
-            fetchLists();
+            // fetchLists();
           }
         } catch (e) {
           console.log(e);
@@ -132,11 +135,14 @@ export default function ListScreen() {
   // Add a list
   const addList = (event) => {
     createList("New list");
-    // window.location.href = "TobuyListScreen";
   };
-    
- 
-
+  const goToList = (id) => {
+    history.push('/list/'+id);
+    // setLists(lists.filter((list) => list.id !== id));
+  };
+  
+  
+  
   return (
     <div>
       <Paper square position="fixed" >
@@ -146,6 +152,7 @@ export default function ListScreen() {
         lists={lists}
         checkL={checkList}
         deleteList={deleteList}
+        goToList={goToList}
       />
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar>

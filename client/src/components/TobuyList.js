@@ -6,10 +6,10 @@ export default function TobuyList({ tobuys, checkTobuy, deleteTobuy }) {
     <div>
       {tobuys.map((tobuy) => (
         <TobuyItem
-          key={tobuy.id}
+          key={tobuy.itemid}
           title={tobuy.title}
           checkTobuy={checkTobuy}
-          id={tobuy.id}
+          id={tobuy.itemid}
           isCompleted={tobuy.isCompleted}
           deleteTobuy={deleteTobuy}
         />
