@@ -5,9 +5,6 @@ import TextField from "material-ui/TextField";
 import React, { Component } from "react";
 import axios from "axios";
 import { withRouter } from 'react-router';
-
-
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
 
@@ -40,9 +37,9 @@ class Login extends Component {
   }
 
   handleClick(event) {
-    const apiBaseUrl = "http://localhost:3001/";
-    const self = this;
-    const payload = {
+    const apiBaseUrl = "/";
+    let self = this;
+    let payload = {
       userid: self.state.username,
       password: self.state.password,
     };
@@ -112,6 +109,7 @@ class Login extends Component {
                 onClick={(event) => this.handleClick(event)}
               />
             </div>
+
           </div>
         </MuiThemeProvider>
       </div>
@@ -121,4 +119,3 @@ class Login extends Component {
 
 const style = { margin: 15 };
 export default withStyles(styles)(withRouter(Login));
-

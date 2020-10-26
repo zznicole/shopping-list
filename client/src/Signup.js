@@ -18,7 +18,7 @@ class Signup extends Component {
   }
 
   handleClick(event) {
-    const apiBaseUrl = "http://localhost:3001/";
+    const apiBaseUrl = "/";
     //    let apiBaseUrl = "/";
     console.log(
       "values",

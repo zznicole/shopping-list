@@ -1,17 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const url = require('url');
-const querystring = require('querystring');
+var cookieParser = require('cookie-parser')
 const dboo = require('dboo');
 const https = require('https');
-var cors = require('cors');
 const fs = require('fs');
-var cookieParser = require('cookie-parser')
+var path = require('path')
 
 const user = require('./src/user.js');
 const session = require('./src/session.js');
 const config = require('config');
-
+const lists = require('./src/lists');
 
 dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
@@ -24,11 +22,6 @@ let app = express();
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors({
-  'allowedHeaders': ['Content-Type'],
-  'origin': '*',
-  'preflightContinue': true
-}));
 
 let sslOptions = {
    key: fs.readFileSync(sslConfig.key),
@@ -48,14 +41,13 @@ function createServer() {
 let server = createServer();
 console.log("Listening to port " + hostConfig.port)
 
-app.use('/', express.static('../client/build/'))
 app.use('/static', express.static('../client/build/static'))
 
 // Function to handle the root path
-app.get('/', async function(req, res) {
-  s = session.handleSession(req, res);
-  res.json({sessionId: s.sessionId});
-});
+// app.get('/', async function(req, res) {
+//   s = session.handleSession(req, res);
+//   res.json({sessionId: s.sessionId});
+// });
 
 app.get('/newsession', async function(req, res) {
   s = session.handleSession(req, res);
@@ -64,7 +56,7 @@ app.get('/newsession', async function(req, res) {
 
 app.post('/login', async function(req, res) {
   console.log(req.body);
-  s = session.handleSession(req, res);
+  let s = session.handleSession(req, res);
   let upwd = [];
   let userid = req.body.userid;
   let password = req.body.password;
@@ -84,8 +76,28 @@ app.post('/login', async function(req, res) {
   res.json({sessionId: s.sessionId, code: 401, message: "error logging in"});
 });
 
+function listUsers(usr)
+{
+  let userid = usr.userId;
+  let users = [];
+  odb.query(users, "select<User>(eq(userId, \"" + dboo.escape_string(userid) + "\"))");
+  if (users.length > 1) {
+    console.log("*******************************************************************");
+    console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+  }
+  for (let u of users) {
+    console.log(odb.objectid(u));
+    console.log(u);
+  }
+  if (users.length > 1) {
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    console.log("*******************************************************************");
+  }
+}
+
 app.post('/signup', async function(req, res) {
-  s = session.handleSession(req, res);
+  console.log(req.body);
+  let s = session.handleSession(req, res);
   let response = user.createUser(req.body.userid,
                   req.body.email,
                   req.body.first_name, 
@@ -104,7 +116,8 @@ app.get('/verifyuser', async function(req, res) {
 });
 
 app.get('/listusers', async function(req, res) {
-  s = session.handleSession(req, res);
+  console.log(req.body);
+  let s = session.handleSession(req, res);
   if (s.user && s.user.isAdmin()) {
     users = [];
     odb.query(users, "select<User>()");
@@ -125,15 +138,18 @@ app.get('/listsessions', async function(req, res) {
 });
 
 app.get('/userlists', async function(req, res) {
-  s = session.handleSession(req, res);
+  console.log('/userlists');
+  let s = session.handleSession(req, res);
   if (s.user) {
     results = [];
-    for (list of s.user.lists) {
-      results.push({id: odb.objectid(list), summary: list.summary, itemcount: list.items.length});
+    for (let list of s.user.lists) {
+      results.push({id: odb.objectid(list), title: list.summary, subtitle: odb.objectid(list), isCompleted: list.done, itemcount: list.items.length});
     }
     res.json({sessionId: s.sessionId, code: 200, result: results});
+    res.status(200);
   } else {
     res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
   }
 });
 
@@ -142,9 +158,28 @@ app.post('/createlist', async function(req, res) {
   if (s.user) {
     let list = lists.createList(req.body.summary, req.body.description);
     s.user.lists.push(list);
-    odb.commit([s.user, list]);
+    let a = [s.user, list];
+    odb.commit(a);
     results = {listid: odb.objectid(list), summary: list.summary, itemcount: list.items.length };
     res.json({sessionId: s.sessionId, code: 200, result: results});
+  } else {
+    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+  }
+});
+
+app.post('/rmlist', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user) {
+    listidToRemove = req.body.listid;
+    for (let i = 0; i < s.user.lists.length; ++i) {
+      let list = s.user.lists[i];
+      if (odb.objectid(list) == listidToRemove) {
+        s.user.lists.splice(i, 1);
+        break;
+      }
+    }
+    odb.commit([s.user]);
+    res.json({sessionId: s.sessionId, code: 200});
   } else {
     res.json({sessionId: s.sessionId, code: 401, message: "no access"});
   }
@@ -192,3 +227,7 @@ app.get('/sharelist', async function(req, res) {
   }
 });
 
+
+app.get('*', (req,res) =>{
+  res.sendFile(path.join(path.dirname(__dirname), 'client/build/index.html'));
+});

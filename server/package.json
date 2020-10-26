@@ -4,11 +4,12 @@
   "description": "The best shopping list",
   "main": "server.js",
   "dependencies": {
+    "babel-loader": "^8.1.0",
     "bluebird": "^3.7.2",
     "config": "^3.3.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
-    "dboo": "^0.9.0",
+    "dboo": "^0.9.1",
     "express": "^4.17.1",
     "fetch": "^1.1.0",
     "fs": "0.0.1-security",
@@ -18,13 +19,22 @@
     "moment": "^2.28.0",
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.4.11",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-hot-loader": "^4.13.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "underscore": "^1.11.0",
     "util": "^0.12.3",
+    "webpack-dev-middleware": "^3.7.2",
     "winston": "^3.3.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.2",
+    "react-refresh": "^0.9.0",
+    "webpack": "^5.2.0",
+    "webpack-hot-middleware": "^2.25.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"

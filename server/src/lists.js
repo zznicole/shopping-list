@@ -38,11 +38,6 @@ class ShoppingList
   done = false;
   
   constructor() {}
-  create(summary, description) {
-    let s = new ShoppingList();
-    s.summary = summary;
-    s.description = description;
-  }
 };
 exports.ShoppingList = ShoppingList;
 
@@ -55,5 +50,10 @@ dboo.class(ShoppingList,
 
 function createList(summary, description)
 {
-  return ShoppingList.create(summary, description);
+  let s = new ShoppingList();
+  s.summary = summary;
+  s.description = description;
+  return s;
 }
+
+exports.createList = createList;

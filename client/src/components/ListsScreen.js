@@ -1,6 +1,6 @@
 import React from 'react';
 import { v4 } from 'uuid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Lists from './Lists';
 import TobuyListScreen from './TobuyListScreen';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
 import { Add } from '@material-ui/icons';
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -39,46 +40,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+let fetchingLists = false;
+
 export default function ListScreen() {
 
   const classes = useStyles();
-  const [lists, setLists] = useState([
-    {id: v4(),
-      title: "list one",
-      subtitle: "Tomatoes, patatoes",
-      isCompleted: false},
-      
-    {id: v4(),
-      title: "list two",
-      subtitle: "house hallway stool, binocollar",
-      isCompleted: false},
+  const [lists, setLists] = useState([]);
+  
+  const apiBaseUrl = "/";
 
-    {id: v4(),
-      title: "list three",
-      subtitle: "nice shirts, wool outwear",
-      isCompleted: false},
+  function fetchLists() {
+    axios
+      .get(apiBaseUrl + "userlists")
+      .then(function (response) {
+        try {
+          console.log(response.data.code);
+          if (response.data.code === 200) {
+            console.log(response.data.result);
+  
+            fetchingLists = true;
+            setLists(response.data.result);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
+  }
 
-    {id: v4(),
-      title: "list three",
-      subtitle: "nice shirts, wool outwear",
-      isCompleted: false},
-
-    {id: v4(),
-      title: "list one",
-      subtitle: "Tomatoes, patatoes",
-      isCompleted: false},
-      
-    {id: v4(),
-      title: "list two",
-      subtitle: "house hallway stool, binocollar",
-      isCompleted: false},
-
-    {id: v4(),
-      title: "list three",
-      subtitle: "nice shirts, wool outwear",
-      isCompleted: false},
-  ]);
-
+  useEffect(() => {
+    if (!fetchingLists) {
+      fetchLists();
+    } else {
+      fetchingLists = false;
+    }
+  });
+  
+  
   // mark as completed
   const checkList = (id) => {
     console.log(id);
@@ -92,20 +89,50 @@ export default function ListScreen() {
       }),
     );
   };
-   
-  //delete a list
+  
+  function rmList(id) {
+    axios
+      .post(apiBaseUrl + "rmlist", {listid: id})
+      .then(function (response) {
+        try {
+          console.log(response.data.code);
+          if (response.data.code === 200) {
+            console.log(response.data.result);
+  
+            fetchLists();
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
+  }
+  
   const deleteList = (id) => {
-    setLists(lists.filter((list) => list.id !== id));
+    rmList(id);
+    // setLists(lists.filter((list) => list.id !== id));
   };
-
+  
+  function createList(title) {
+    axios
+      .post(apiBaseUrl + "createlist", {summary: title, description: ""})
+      .then(function (response) {
+        try {
+          console.log(response.data.code);
+          if (response.data.code === 200) {
+            console.log(response.data.result);
+  
+            fetchLists();
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
+  }
+  
   // Add a list
-  const addList = () => {
-    const newList = {
-      id: v4(),
-      title: "New list",
-      isCompleted: false,
-    };
-    setLists([...lists, newList]);
+  const addList = (event) => {
+    createList("New list");
+    // window.location.href = "TobuyListScreen";
   };
     
  
@@ -122,11 +149,11 @@ export default function ListScreen() {
       />
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar>
-          <Link to='/list'>
-            <Fab color="secondary" className={classes.fabButton}>
-              <Add />
-            </Fab>
-          </Link>
+          <Fab color="secondary" className={classes.fabButton}>
+            <Add
+              onClick={(event) => addList(event)}
+            />
+          </Fab>
         </Toolbar>
       </AppBar>
     </div>

@@ -101,6 +101,7 @@ let verificationTimeout = { timeout: 60, unit: "minutes"};
 
 function createUser(userId, email, first_name, last_name, password, odb) 
 {
+  console.log('Create user')
   purgeOldUnverifiedUsers();
   let numberOfUnverifiedUsers = Object.keys(unverifiedUsers).length;
   if (numberOfUnverifiedUsers < maxNumberOfUnverifiedUsers) {
