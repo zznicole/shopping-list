@@ -1,13 +1,11 @@
 import React, {useEffect} from 'react';
-import { v4 } from 'uuid';
 import { useState } from 'react';
 import TobuyList from './TobuyList';
 import TobuyForm from './TobuyForm';
-import ListsScreen from './ListsScreen';
-import { Link, useParams, useLocation } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
+import { Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
 import { Home } from '@material-ui/icons'
 import axios from "axios";
 
@@ -18,13 +16,13 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 24,
     backgroundColor: '#00bcd4',
     color: '#ffffff',
-    padding: 20,
-
+    width: '100%',
+    minHeight: 43,
+    paddingTop: 12,
+    zIndex: 1,
   },
   
   appBar: {
-    // position: 'fixed',
-    // color: 'primary',
     top: 'auto',
     bottom: 0,
     backgroundColor: '#00bcd4',
@@ -134,10 +132,12 @@ export default function TobuyListScreen() {
   
   return (
     <div>
-      <Paper square>
-        <Typography variant="h5" align="center" padding="16" className={classes.header}>Grocery List</Typography>
-      </Paper>
-      <TobuyForm addTobuy={addTobuy} position="fixed" />
+      <AppBar position='fixed'>
+        <Typography variant="h5" align="center" className={classes.header}>Grocery List</Typography>
+      </AppBar>
+      <Toolbar />
+      
+      <TobuyForm addTobuy={addTobuy}  />
       <TobuyList
         tobuys={tobuys}
         checkTobuy={checkTobuy}
