@@ -16,16 +16,13 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 24,
     backgroundColor: '#00bcd4',
     color: '#ffffff',
-    padding: 20,
     width: '100%',
-    position: 'fixed',
+    minHeight: 43,
+    paddingTop: 12,
     zIndex: 1,
-    top: 0
   },
   
   appBar: {
-    // position: 'fixed',
-    // color: 'primary',
     top: 'auto',
     bottom: 0,
     backgroundColor: '#00bcd4',
@@ -145,9 +142,10 @@ export default function ListScreen() {
   
   return (
     <div>
-      <Paper square position="fixed" >
+      <AppBar position="fixed">
         <Typography variant="h5" align="center" className={classes.header}>My Shopping Lists</Typography>
-      </Paper>
+      </AppBar>
+      <Toolbar />
       <Lists
         lists={lists}
         checkL={checkList}
