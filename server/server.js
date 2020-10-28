@@ -52,6 +52,7 @@ let server = createServer();
 console.log("Listening to port " + hostConfig.port)
 
 app.use('/static', express.static('../client/build/static'))
+app.use('/', express.static('../client/build/'))
 
 // Function to handle the root path
 // app.get('/', async function(req, res) {
