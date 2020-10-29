@@ -1,4 +1,5 @@
 const dboo = require('dboo');
+const parser = require('./parser.js');
 
 class Category
 {
@@ -38,6 +39,23 @@ dboo.class(Item,
    {"done": dboo.bool}]
 );
 
+function createItems(summary, description, category, fn)
+{
+  let items = [];
+  let lines = parser.parse(summary,
+    function (lines) {
+      for (let line of lines) {
+        let i = new Item();
+        i.summary = line;
+        i.description = "";
+        i.category = category;
+        items.push(i);
+      }
+      fn(items);
+    });
+  return items;
+}
+
 function createItem(summary, description, category)
 {
   let i = new Item();
@@ -75,4 +93,5 @@ function createList(summary, description)
 
 exports.createList = createList;
 exports.createItem = createItem;
+exports.createItems = createItems;
 exports.createCategory = createCategory;
