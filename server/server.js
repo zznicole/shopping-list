@@ -4,7 +4,8 @@ var cookieParser = require('cookie-parser')
 const dboo = require('dboo');
 const https = require('https');
 const fs = require('fs');
-var path = require('path')
+var path = require('path');
+var parser = require('./src/parser');
 
 const user = require('./src/user.js');
 const session = require('./src/session.js');
@@ -17,6 +18,8 @@ sslConfig = config.get('ssl');
 
 const odb = new dboo.ODB();
 odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
+
+parser.init(odb);
 
 let categories = [];
 let defaultCategory;
@@ -240,15 +243,19 @@ app.post('/newitem', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.body.listid);
-    let item = lists.createItem(req.body.summary, req.body.description, defaultCategory);
-    list.items.push(item);
-    odb.commit([item, list]);
-    let itemid = odb.objectid(item);
-    results = {listid: req.body.listid, list: list};
-    res.json({code: 200, listId: req.body.listid, newItemId: itemid});
-  } else {
-    res.json({code: 401, message: "no access"});
-  }
+    lists.createItems(req.body.summary, req.body.description, defaultCategory,
+    function (items) {
+      if (items.length > 0) {
+        for (let item of items) {
+          list.items.push(item);
+        }
+        items.push(list);
+        odb.commit(items);
+      }});
+      res.json({code: 200});
+    } else {
+      res.json({code: 401, message: "no access"});
+    }
 });
 
 app.post('/rmitem', async function(req, res) {
@@ -287,6 +294,24 @@ app.post('/edititem', async function(req, res) {
 });
 
 app.post('/sharelist', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.body.listid);
+    let otherUserId = odb.object(req.body.userid);
+    let otherUser = users.findUser(otherUserId);
+    if (otherUser) {
+      otherUser.lists.push(list);
+      odb.commit(otherUser);
+      res.json({sessionId: s.sessionId, code: 200, message: list.description + " shared with " + otherUserId});
+    } else {
+      res.json({sessionId: s.sessionId, code: 404, message: "User ('" + otherUserId + "') not found"});
+    }
+  } else {
+    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+  }
+});
+
+app.post('/createList', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.body.listid);
