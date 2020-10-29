@@ -1,7 +1,7 @@
 import React from 'react';
 import ContentEditable from 'react-contenteditable';
 import { Container, Card, Typography, IconButton } from '@material-ui/core';
-import { Check, Delete } from '@material-ui/icons';
+import { Check, Delete, Share } from '@material-ui/icons';
 
 export default function ListItem({
   title,
