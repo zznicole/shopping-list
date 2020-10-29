@@ -36,8 +36,8 @@ export default function TobuyForm({ addTobuy }) {
   const history = useHistory();
   const [text, setText] = useState('');
 
-  const goToList = (id) => {
-    history.push('/list/'+id);
+  const backToList = () => {
+    history.goBack();
   };
 
   const handleSubmit = (e) => {
@@ -73,7 +73,7 @@ export default function TobuyForm({ addTobuy }) {
       </form>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-            <IconButton edge="start" color="inherit" className={classes.backButton} onClick={goToList}>
+            <IconButton edge="start" color="inherit" className={classes.backButton} onClick={backToList}>
               <ArrowBack />
             </IconButton>
         </Toolbar>
