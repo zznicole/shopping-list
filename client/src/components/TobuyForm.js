@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FormControl, Container, TextField, Fab } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 
 export default function TobuyForm({ addTobuy }) {
   const [text, setText] = useState('');

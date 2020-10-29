@@ -3,12 +3,12 @@ import { useState } from 'react';
 import TobuyList from './TobuyList';
 import TobuyForm from './TobuyForm';
 import { Link, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, AppBar, Toolbar, IconButton} from '@material-ui/core';
 import { Home, Share } from '@material-ui/icons'
 import axios from "axios";
-import { spacing } from 'material-ui/styles';
 
 const apiBaseUrl = "/";
 
@@ -45,6 +45,7 @@ export default function TobuyListScreen() {
   const classes = useStyles();
   const [tobuys, setTobuys] = useState([]);
   const { listid } = useParams();
+  const history = useHistory();
   
   function fetchList() {
     axios
@@ -130,7 +131,11 @@ export default function TobuyListScreen() {
       }
     }
   }
-  
+
+  const goToShare = (id) => {
+    history.push('/share/'+id);
+  }
+
   return (
     <div>
       <AppBar position='fixed'>
@@ -152,7 +157,7 @@ export default function TobuyListScreen() {
             </IconButton>
           </Link>
           <IconButton edge="end"  color="inherit" className={classes.shareButton}>
-              <Share />
+              <Share onClick={goToShare} />
           </IconButton>
         </Toolbar>
       </AppBar>
