@@ -5,9 +5,10 @@ import TobuyForm from './TobuyForm';
 import { Link, useParams } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
-import { Home } from '@material-ui/icons'
+import { Typography, AppBar, Toolbar, IconButton} from '@material-ui/core';
+import { Home, Share } from '@material-ui/icons'
 import axios from "axios";
+import { spacing } from 'material-ui/styles';
 
 const apiBaseUrl = "/";
 
@@ -28,14 +29,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#00bcd4',
   },
 
-  fabButton: {
-    position: 'absolute',
-    zIndex: 1,
-    top: -30,
-    left: 0,
-    right: 0,
-    margin: '0 auto',
+  homeButton: {
+    marginLeft: theme.spacing(1),
+    color: '#ffffff',
   },
+
+  shareButton: {
+    marginLeft: theme.spacing(1),
+  }
 }));
 
 let fetchingList = false;
@@ -143,13 +144,16 @@ export default function TobuyListScreen() {
         checkTobuy={checkTobuy}
         deleteTobuy={deleteTobuy}
       />
-      <AppBar position="fixed" color="primary" className={classes.appBar}>
+      <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Link to='/lists'>
-            <Fab color="secondary" className={classes.fabButton}>
+            <IconButton edge="start" color="inherit" className={classes.homeButton}>
               <Home />
-            </Fab>
+            </IconButton>
           </Link>
+          <IconButton edge="end"  color="inherit" className={classes.shareButton}>
+              <Share />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </div>
