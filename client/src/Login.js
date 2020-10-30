@@ -7,6 +7,7 @@ import axios from "axios";
 import { withRouter } from 'react-router';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const styles = (theme) => ({
   "@global": {
@@ -78,6 +79,9 @@ class Login extends Component {
         position: 'absolute', left: '50%', top: '40%',
         transform: 'translate(-50%, -50%)'
     }}>
+              <div>
+                <Typography variant="h3" color="orange">OUR SHOPPING LIST</Typography>
+              </div>
               <TextField
                 hintText="Enter your Username"
                 id="standard-basic"
