@@ -1,5 +1,4 @@
 import React from 'react';
-import ContentEditable from 'react-contenteditable';
 import ListItem from './ListItem';
 
 export default function Lists({ lists, checkList, deleteList , goToList}) {
@@ -15,7 +14,6 @@ export default function Lists({ lists, checkList, deleteList , goToList}) {
           isCompleted={list.isCompleted}
           deleteList={deleteList}
           goToList={goToList}
-          ContentEditable="true"
         />
       ))}
     </div>

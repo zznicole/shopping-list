@@ -3,12 +3,18 @@ import { useState, useEffect } from 'react';
 import Lists from './Lists';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Toolbar, Fab} from '@material-ui/core';
+import { Typography, AppBar, Toolbar, Button, Fab} from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import axios from "axios";
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
+  topBar: {
+    fontSize: 16,
+    backgroundColor: '#00bcd4',
+
+  },
+
   header: {
     fontSize: 24,
     backgroundColor: '#00bcd4',
@@ -135,12 +141,21 @@ export default function ListScreen() {
     // setLists(lists.filter((list) => list.id !== id));
   };
   
-  
+  const goToLogin = () => {
+    alert('You are logging out.');
+    axios
+      .get(apiBaseUrl + "logout");
+
+    history.push('/');
+  }
   
   return (
     <div>
       <AppBar position="fixed">
-        <Typography variant="h5" align="center" className={classes.header}>My Shopping Lists</Typography>
+        <Toolbar className={classes.topBar}>
+          <Typography variant="h5" align="center" className={classes.header}>My Shopping Lists</Typography>
+          <Button variant="outlined" onClick={goToLogin}>Logout</Button>
+        </Toolbar>
       </AppBar>
       <Toolbar />
       <Lists
