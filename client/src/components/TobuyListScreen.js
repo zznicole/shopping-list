@@ -132,8 +132,8 @@ export default function TobuyListScreen() {
     }
   }
 
-  const goToShare = (id) => {
-    history.push('/share/'+id);
+  const goToShare = () => {
+    history.push('/share/'+listid);
   }
 
   return (
