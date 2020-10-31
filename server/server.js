@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser')
 const dboo = require('dboo');
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 var path = require('path');
@@ -43,17 +44,29 @@ let sslOptions = {
 };
 
 function createServer() {
-  if (hostConfig.useSSL == false) {
-    const http = require('http');
-    let serverHttp = http.createServer(app).listen(hostConfig.port);
+  const httpApp = express();
+  httpApp.all('*', (req, res) =>
+    res.redirect(301, hostConfig.URL));
+  let serverHttp = http.createServer(httpApp);
+  serverHttp.listen(hostConfig.httpPort, () =>
+    console.log(`HTTP server listening on ${hostConfig.httpPort}`)
+  );
   
-    return serverHttp;
+  if (hostConfig.useSSL == false) {
+    let serverHttp2 = http.createServer(app).listen(hostConfig.port, () =>
+      console.log("HTTPS (API) server listening on port " + hostConfig.port));
+  
+    return [serverHttp2, serverHttp];
   }
-  let serverHttps = https.createServer(sslOptions, app).listen(hostConfig.port);
-  return serverHttps;
+  let serverHttps = https.createServer(sslOptions, app);
+  serverHttps.listen(hostConfig.port, () =>
+    console.log("HTTPS (API) server listening on port " + hostConfig.port)
+    );
+  
+  return [serverHttps, serverHttp];
 }
 let server = createServer();
-console.log("Listening to port " + hostConfig.port)
+
 
 app.use('/static', express.static('../client/build/static'))
 app.use('/', express.static('../client/build/'))
