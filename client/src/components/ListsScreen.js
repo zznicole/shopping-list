@@ -56,16 +56,14 @@ export default function ListScreen() {
       .get(apiBaseUrl + "userlists")
       .then(function (response) {
         try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data.result);
-  
-            fetchingLists = true;
-            setLists(response.data.result);
-          }
+          console.log("ok");
+          fetchingLists = true;
+          setLists(response.data.result);
         } catch (e) {
           console.log(e);
         }
+      }).catch(reason => {
+        history.push('/');
       });
   }
 
@@ -96,39 +94,23 @@ export default function ListScreen() {
     axios
       .post(apiBaseUrl + "rmlist", {listid: id})
       .then(function (response) {
-        try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data.result);
-  
-            fetchLists();
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      });
+          fetchLists();
+        }).catch(reason => {
+          history.push('/');
+        });
   }
   
   const deleteList = (id) => {
     rmList(id);
-    // setLists(lists.filter((list) => list.id !== id));
   };
   
   function createList(title) {
     axios
       .post(apiBaseUrl + "createlist", {summary: title, description: ""})
       .then(function (response) {
-        try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data.result);
-            history.push('/list/'+response.data.result.listid);
-  
-            // fetchLists();
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        history.push('/list/'+response.data.result.listid);
+      }).catch(reason => {
+        history.push('/');
       });
   }
   
@@ -138,14 +120,12 @@ export default function ListScreen() {
   };
   const goToList = (id) => {
     history.push('/list/'+id);
-    // setLists(lists.filter((list) => list.id !== id));
   };
   
   const goToLogin = () => {
     alert('You are logging out.');
     axios
       .get(apiBaseUrl + "logout");
-
     history.push('/');
   }
   
@@ -159,7 +139,7 @@ export default function ListScreen() {
       </AppBar>
       <Toolbar />
       <Lists
-        lists={lists}
+        lists={lists || []}
         checkL={checkList}
         deleteList={deleteList}
         goToList={goToList}

@@ -58,16 +58,13 @@ export default function TobuyForm({ addTobuy }) {
       .get(apiBaseUrl + "getshares?listid=" + listid)
       .then(function (response) {
         try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data.result);
-  
-            doNotFetch = true;
-            setShares(response.data.result.items);
-          }
+          doNotFetch = true;
+          setShares(response.data.result.items);
         } catch (e) {
           console.log(e);
         }
+      }).catch(reason => {
+        history.push('/');
       });
   }
   
@@ -83,16 +80,9 @@ export default function TobuyForm({ addTobuy }) {
     axios
       .post(apiBaseUrl + "sharelist", {listid: listid, userid: email})
       .then(function (response) {
-        try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data);
-            
-            fetchList();
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        fetchList();
+      }).catch(reason => {
+        history.push('/');
       });
   }
   
@@ -100,16 +90,9 @@ export default function TobuyForm({ addTobuy }) {
     axios
       .post(apiBaseUrl + "rmshare", {listid: listid, userid: id})
       .then(function (response) {
-        try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data);
-            
-            fetchList();
-          }
-        } catch (e) {
-          console.log(e);
-        }
+          fetchList();
+      }).catch(reason => {
+        history.push('/');
       });
   }
   

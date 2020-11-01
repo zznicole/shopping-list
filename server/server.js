@@ -79,7 +79,6 @@ app.use('/', express.static('../client/build/'))
 
 app.get('/newsession', async function(req, res) {
   s = session.handleSession(req, res);
-  res.json({sessionId: s.sessionId});
 });
 
 app.get('/logout', async function(req, res) {
@@ -98,12 +97,13 @@ app.post('/login', async function(req, res) {
       s.user = user.findUser(odb, userid);
       console.log(s.user);
       if (s.user) {
-        res.json({sessionId: s.sessionId, code: 200, message: "logged in"});
+        res.json({code: 200, message: "logged in"});
         return;
       }
     } 
   }
-  res.json({sessionId: s.sessionId, code: 401, message: "error logging in"});
+  res.status(401);
+  res.json({code: 401, message: "error logging in"});
 });
 
 app.post('/signup', async function(req, res) {
@@ -115,7 +115,7 @@ app.post('/signup', async function(req, res) {
                   req.body.last_name,
                   req.body.password, 
                   odb);
-  res.json({sessionId: s.sessionId, code: response.code, message: response.message});
+  res.json({code: response.code, message: response.message});
 });
 
 app.get('/verifyuser', async function(req, res) {
@@ -124,7 +124,8 @@ app.get('/verifyuser', async function(req, res) {
                   req.query.verificationcode,
                   odb);
   // Redirect to screen with "successfully verified" message and a button to login screen
-  res.json({sessionId: s.sessionId, message: response.message, code: response.code});
+  res.status(response.code);
+  res.json({message: response.message, code: response.code});
 });
 
 // TODO: Move to other file? Admin API
@@ -132,9 +133,10 @@ app.get('/listsessions', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user && s.user.isAdmin()) {
     let allSessions = session.getSessions();
-    res.json({sessionId: s.sessionId, code: 200, result: allSessions});
+    res.json({code: 200, result: allSessions});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -165,11 +167,10 @@ app.get('/userlists', async function(req, res) {
         isCompleted: list.done,
         itemCount: list.items.length});
     }
-    res.json({sessionId: s.sessionId, code: 200, result: results});
-    res.status(200);
+    res.json({code: 200, result: results});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
     res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -181,9 +182,10 @@ app.post('/createlist', async function(req, res) {
     let a = [s.user, list];
     odb.commit(a);
     results = {listid: odb.objectid(list), summary: list.summary, itemcount: list.items.length };
-    res.json({sessionId: s.sessionId, code: 200, result: results});
+    res.json({code: 200, result: results});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -214,9 +216,10 @@ app.post('/rmlist', async function(req, res) {
         break;
       }
     }
-    res.json({sessionId: s.sessionId, code: 200});
+    res.json({code: 200});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -234,9 +237,10 @@ app.get('/getlist', async function(req, res) {
       isOwn: s.user.userId === list.owner,
       isShared: list.users.length > 0,
       items: items };
-    res.json({sessionId: s.sessionId, code: 200, result: results});
+    res.json({code: 200, result: results});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -251,6 +255,7 @@ app.post('/editlist', async function(req, res) {
     
     res.json({code: 200, itemid: itemid});
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
   }
 });
@@ -260,18 +265,19 @@ app.post('/newitem', async function(req, res) {
   if (s.user) {
     let list = odb.object(req.body.listid);
     lists.createItems(req.body.summary, req.body.description, defaultCategory,
-    function (items) {
-      if (items.length > 0) {
-        for (let item of items) {
-          list.items.push(item);
-        }
-        items.push(list);
-        odb.commit(items);
-      }});
-      res.json({code: 200});
-    } else {
-      res.json({code: 401, message: "no access"});
-    }
+  function (items) {
+    if (items.length > 0) {
+      for (let item of items) {
+        list.items.push(item);
+      }
+      items.push(list);
+      odb.commit(items);
+    }});
+    res.json({code: 200});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
 });
 
 app.post('/rmitem', async function(req, res) {
@@ -290,6 +296,7 @@ app.post('/rmitem', async function(req, res) {
     odb.commit(list);
     res.json({code: 200});
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
   }
 });
@@ -305,6 +312,7 @@ app.post('/edititem', async function(req, res) {
 
     res.json({code: 200, itemid: req.body.itemid});
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
   }
 });
@@ -347,12 +355,13 @@ app.post('/sharelist', async function(req, res) {
         console.log( otherUserId + " not found!");
       }
     } else {
+      res.status(404);
       res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner"});
       console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
-    console.log("no access");
   }
 });
 
@@ -369,14 +378,16 @@ app.get('/getshares', async function(req, res) {
         items.push({itemid: odb.objectid(usr), title: usr.userId});
       }
       results = {listid: req.query.listid, items: items };
-      res.json({sessionId: s.sessionId, code: 200, result: results});
+      res.json({code: 200, result: results});
       console.log(results);
   
     } else {
-      res.json({sessionId: s.sessionId, code: 404, message: "User is not owner of list"});
+      res.status(404);
+      res.json({code: 404, message: "User is not owner of list"});
     }
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -429,10 +440,12 @@ app.post('/rmshare', async function(req, res) {
         console.log( otherUserId + " not found!");
       }
     } else {
+      res.status(404);
       res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner"});
       console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
     console.log("no access");
   }
