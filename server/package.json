@@ -4,6 +4,7 @@
   "description": "The best shopping list",
   "main": "server.js",
   "dependencies": {
+    "aws-sdk": "^2.783.0",
     "axios": "^0.21.0",
     "babel-loader": "^8.1.0",
     "bluebird": "^3.7.2",
