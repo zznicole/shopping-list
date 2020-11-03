@@ -1,5 +1,6 @@
 const dboo = require('dboo');
 const parser = require('./parser.js');
+const userid = require('./userid.js');
 
 class Category
 {
@@ -71,6 +72,8 @@ class ShoppingList
   description = "";
   items = [];
   done = false;
+  owner = null;
+  users = [];
   
   constructor() {}
 };
@@ -80,14 +83,18 @@ dboo.class(ShoppingList,
   [{"summary": dboo.string},
    {"description": dboo.string},
    {"items": dboo.array(Item)},
-   {"done": dboo.bool}]
+    {"done": dboo.bool},
+    {"owner": userid.UserId},
+    {"users": dboo.array(userid.UserId)},
+    ]
 );
 
-function createList(summary, description)
+function createList(summary, description, owner)
 {
   let s = new ShoppingList();
   s.summary = summary;
   s.description = description;
+  s.owner = owner.userId;
   return s;
 }
 

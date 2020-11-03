@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser')
 const dboo = require('dboo');
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 var path = require('path');
@@ -10,7 +11,8 @@ var parser = require('./src/parser');
 const user = require('./src/user.js');
 const session = require('./src/session.js');
 const config = require('config');
-const lists = require('./src/lists');
+const lists = require('./src/lists.js');
+const userid = require('./src/userid.js');
 
 dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
@@ -42,17 +44,29 @@ let sslOptions = {
 };
 
 function createServer() {
-  if (hostConfig.useSSL == false) {
-    const http = require('http');
-    let serverHttp = http.createServer(app).listen(hostConfig.port);
+  const httpApp = express();
+  httpApp.all('*', (req, res) =>
+    res.redirect(301, hostConfig.URL));
+  let serverHttp = http.createServer(httpApp);
+  serverHttp.listen(hostConfig.httpPort, () =>
+    console.log(`HTTP server listening on ${hostConfig.httpPort}`)
+  );
   
-    return serverHttp;
+  if (hostConfig.useSSL == false) {
+    let serverHttp2 = http.createServer(app).listen(hostConfig.port, () =>
+      console.log("HTTPS (API) server listening on port " + hostConfig.port));
+  
+    return [serverHttp2, serverHttp];
   }
-  let serverHttps = https.createServer(sslOptions, app).listen(hostConfig.port);
-  return serverHttps;
+  let serverHttps = https.createServer(sslOptions, app);
+  serverHttps.listen(hostConfig.port, () =>
+    console.log("HTTPS (API) server listening on port " + hostConfig.port)
+    );
+  
+  return [serverHttps, serverHttp];
 }
 let server = createServer();
-console.log("Listening to port " + hostConfig.port)
+
 
 app.use('/static', express.static('../client/build/static'))
 app.use('/', express.static('../client/build/'))
@@ -65,7 +79,6 @@ app.use('/', express.static('../client/build/'))
 
 app.get('/newsession', async function(req, res) {
   s = session.handleSession(req, res);
-  res.json({sessionId: s.sessionId});
 });
 
 app.get('/logout', async function(req, res) {
@@ -75,43 +88,23 @@ app.get('/logout', async function(req, res) {
 app.post('/login', async function(req, res) {
   console.log(req.body);
   let s = session.handleSession(req, res);
-  let upwd = [];
   let userid = req.body.userid;
   let password = req.body.password;
-  odb.query(upwd, "select<UserPassword>(eq(userId, \"" + dboo.escape_string(userid) + "\"))");
-  if (upwd.length == 1) {
-    if (user.passwordMatches(upwd[0], password)) {
+  let pwd = user.findUserPassword(odb, userid);
+  if (pwd) {
+    if (user.passwordMatches(pwd, password)) {
       console.log("User " + userid + " logged in");
-      let users = [];
-      odb.query(users, "select<User>(eq(userId, \"" + dboo.escape_string(userid) + "\"))");
-      if (users.length == 1) {
-        s.user = users[0];
-        res.json({sessionId: s.sessionId, code: 200, message: "logged in"});
+      s.user = user.findUser(odb, userid);
+      console.log(s.user);
+      if (s.user) {
+        res.json({code: 200, message: "logged in"});
         return;
       }
     } 
   }
-  res.json({sessionId: s.sessionId, code: 401, message: "error logging in"});
+  res.status(401);
+  res.json({code: 401, message: "error logging in"});
 });
-
-function listUsers(usr)
-{
-  let userid = usr.userId;
-  let users = [];
-  odb.query(users, "select<User>(eq(userId, \"" + dboo.escape_string(userid) + "\"))");
-  if (users.length > 1) {
-    console.log("*******************************************************************");
-    console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-  }
-  for (let u of users) {
-    console.log(odb.objectid(u));
-    console.log(u);
-  }
-  if (users.length > 1) {
-    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-    console.log("*******************************************************************");
-  }
-}
 
 app.post('/signup', async function(req, res) {
   console.log(req.body);
@@ -122,7 +115,7 @@ app.post('/signup', async function(req, res) {
                   req.body.last_name,
                   req.body.password, 
                   odb);
-  res.json({sessionId: s.sessionId, code: response.code, message: response.message});
+  res.json({code: response.code, message: response.message});
 });
 
 app.get('/verifyuser', async function(req, res) {
@@ -130,28 +123,20 @@ app.get('/verifyuser', async function(req, res) {
   response = user.verifyUser(req.query.userid,
                   req.query.verificationcode,
                   odb);
-  res.json({sessionId: s.sessionId, message: response.message, code: response.code});
+  // Redirect to screen with "successfully verified" message and a button to login screen
+  res.status(response.code);
+  res.json({message: response.message, code: response.code});
 });
 
-app.get('/listusers', async function(req, res) {
-  console.log(req.body);
-  let s = session.handleSession(req, res);
-  if (s.user && s.user.isAdmin()) {
-    users = [];
-    odb.query(users, "select<User>()");
-    res.json({sessionId: s.sessionId, code: 200, result: users});
-  } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
-  }
-});
-
+// TODO: Move to other file? Admin API
 app.get('/listsessions', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user && s.user.isAdmin()) {
     let allSessions = session.getSessions();
-    res.json({sessionId: s.sessionId, code: 200, result: allSessions});
+    res.json({code: 200, result: allSessions});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -161,33 +146,46 @@ app.get('/userlists', async function(req, res) {
     results = [];
     for (let list of s.user.lists) {
       let summary = "";
-      for (let i = 0; i < list.items.length && i < 10; ++i) {
+      for (let i = 0; i < list.items.length && i < 5; ++i) {
         if (i > 0) {
           summary = summary + ", ";
         }
         summary = summary + list.items[i].summary;
       }
-      results.push({id: odb.objectid(list), title: list.summary, subtitle: summary, isCompleted: list.done, itemcount: list.items.length});
+      len = summary.length;
+      summary = summary.substr(0, 37);
+      // Add ellipses (...) at end (unicode \u2026)
+      if (len > 37) {
+        summary = summary + "\u2026";
+      }
+      results.push({
+        id: odb.objectid(list),
+        title: list.summary,
+        subtitle: summary,
+        isOwn: s.user.userId === list.owner,
+        isShared: list.users.length > 0,
+        isCompleted: list.done,
+        itemCount: list.items.length});
     }
-    res.json({sessionId: s.sessionId, code: 200, result: results});
-    res.status(200);
+    res.json({code: 200, result: results});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
     res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
 app.post('/createlist', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
-    let list = lists.createList(req.body.summary, req.body.description);
+    let list = lists.createList(req.body.summary, req.body.description, s.user);
     s.user.lists.push(list);
     let a = [s.user, list];
     odb.commit(a);
     results = {listid: odb.objectid(list), summary: list.summary, itemcount: list.items.length };
-    res.json({sessionId: s.sessionId, code: 200, result: results});
+    res.json({code: 200, result: results});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -199,13 +197,29 @@ app.post('/rmlist', async function(req, res) {
       let list = s.user.lists[i];
       if (odb.objectid(list) == listidToRemove) {
         s.user.lists.splice(i, 1);
+        if (list.owner === s.user.userId) {
+          // user is list owner
+          // TODO: If a list is shared, if we don't remove the list from the other users it is still going to
+          // be available for them. Should that be the case?
+          // Maybe the owner should always be forced to remove the users the list is shared with before removing the list.
+        } else {
+          // user has this list as a shared list, remove from users field:
+          for (let k = 0; k < list.users.length; ++k) {
+            let uid = list.users[k];
+            if (uid.userId === s.user.userId) {
+              list.users.splice(k, 1);
+              break;
+            }
+          }
+        }
+        odb.commit([s.user, list]);
         break;
       }
     }
-    odb.commit([s.user]);
-    res.json({sessionId: s.sessionId, code: 200});
+    res.json({code: 200});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -217,10 +231,16 @@ app.get('/getlist', async function(req, res) {
     for (let item of list.items) {
       items.push({itemid: odb.objectid(item), title: item.summary, isCompleted: item.done});
     }
-    results = {listid: req.query.listid, summary: list.summary, items: items };
-    res.json({sessionId: s.sessionId, code: 200, result: results});
+    results = {
+      listid: req.query.listid,
+      summary: list.summary,
+      isOwn: s.user.userId === list.owner,
+      isShared: list.users.length > 0,
+      items: items };
+    res.json({code: 200, result: results});
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
@@ -235,6 +255,7 @@ app.post('/editlist', async function(req, res) {
     
     res.json({code: 200, itemid: itemid});
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
   }
 });
@@ -244,18 +265,19 @@ app.post('/newitem', async function(req, res) {
   if (s.user) {
     let list = odb.object(req.body.listid);
     lists.createItems(req.body.summary, req.body.description, defaultCategory,
-    function (items) {
-      if (items.length > 0) {
-        for (let item of items) {
-          list.items.push(item);
-        }
-        items.push(list);
-        odb.commit(items);
-      }});
-      res.json({code: 200});
-    } else {
-      res.json({code: 401, message: "no access"});
-    }
+  function (items) {
+    if (items.length > 0) {
+      for (let item of items) {
+        list.items.push(item);
+      }
+      items.push(list);
+      odb.commit(items);
+    }});
+    res.json({code: 200});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
 });
 
 app.post('/rmitem', async function(req, res) {
@@ -274,6 +296,7 @@ app.post('/rmitem', async function(req, res) {
     odb.commit(list);
     res.json({code: 200});
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
   }
 });
@@ -289,43 +312,142 @@ app.post('/edititem', async function(req, res) {
 
     res.json({code: 200, itemid: req.body.itemid});
   } else {
+    res.status(401);
     res.json({code: 401, message: "no access"});
   }
 });
 
 app.post('/sharelist', async function(req, res) {
+  console.log('sharelist');
+  console.log(req.body);
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.body.listid);
-    let otherUserId = odb.object(req.body.userid);
-    let otherUser = users.findUser(otherUserId);
-    if (otherUser) {
-      otherUser.lists.push(list);
-      odb.commit(otherUser);
-      res.json({sessionId: s.sessionId, code: 200, message: list.description + " shared with " + otherUserId});
+    // Only owner can share
+    console.log("List owner: " + list.owner.userId);
+    console.log("User: " + s.user.userId.userId);
+    if (list.owner === s.user.userId) {
+      let otherUserId = req.body.userid;
+      // Can't share with one self:
+      if (list.owner.userId == otherUserId) {
+        res.json({code: 404, message: "Cannot share with yourself"});
+        console.log("Cannot share with yourself");
+        return;
+      }
+      if (list.users.find(usrId => usrId.userId == otherUserId) ) {
+        res.json({code: 404, message: "List is already shared with user"});
+        console.log("List is already shared with user");
+        return;
+      }
+  
+      let otherUser = user.findUser(odb, otherUserId);
+      if (otherUser) {
+        list.users.push(otherUser.userId);
+        if (otherUser.lists.find(item => item === list) == undefined) {
+          otherUser.lists.push(list);
+        }
+        odb.commit([otherUser, list]);
+  
+        res.json({code: 200, message: list.description + " shared with " + otherUserId});
+        console.log(list.description + " shared with " + otherUserId);
+      } else {
+        res.json({code: 200, message: otherUserId + " not found!"});
+        console.log( otherUserId + " not found!");
+      }
     } else {
-      res.json({sessionId: s.sessionId, code: 404, message: "User ('" + otherUserId + "') not found"});
+      res.status(404);
+      res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner"});
+      console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
   }
 });
 
-app.post('/createList', async function(req, res) {
+app.get('/getshares', async function(req, res) {
+  console.log('getshares');
+  console.log(req.query);
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.query.listid);
+    // Only owner can see shares
+    if (list.owner == s.user.userId) {
+      items = [];
+      for (let usr of list.users) {
+        items.push({itemid: odb.objectid(usr), title: usr.userId});
+      }
+      results = {listid: req.query.listid, items: items };
+      res.json({code: 200, result: results});
+      console.log(results);
+  
+    } else {
+      res.status(404);
+      res.json({code: 404, message: "User is not owner of list"});
+    }
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+
+app.post('/rmshare', async function(req, res) {
+  console.log('rmshare');
+  console.log(req.body);
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.body.listid);
-    let otherUserId = odb.object(req.body.userid);
-    let otherUser = users.findUser(otherUserId);
-    if (otherUser) {
-      otherUser.lists.push(list);
-      odb.commit(otherUser);
-      res.json({sessionId: s.sessionId, code: 200, message: list.description + " shared with " + otherUserId});
+    // Only owner can share
+    console.log("List owner: " + list.owner.userId);
+    console.log("User: " + s.user.userId.userId);
+    if (list.owner === s.user.userId) {
+      let otherUserId = odb.object(req.body.userid);
+      // Can't remove yourself:
+      if (list.owner === otherUserId) {
+        res.json({code: 404, message: "Cannot remove yourself"});
+        console.log("Cannot remove yourself");
+        return;
+      }
+      if (list.users.find(usrId => usrId === otherUserId) == undefined) {
+        res.json({code: 404, message: "List is not shared with user"});
+        console.log("List is not shared with user");
+        return;
+      }
+      
+      let otherUser = user.findUser(odb, otherUserId.userId);
+      if (otherUser) {
+        for (let i = 0; i < otherUser.lists.length; ++i) {
+          if (otherUser.lists[i] === list) {
+            otherUser.lists.splice(i, 1);
+            break;
+          }
+        }
+        // user has this list as a shared list, remove from users field:
+        for (let k = 0; k < list.users.length; ++k) {
+          let uid = list.users[k];
+          if (uid === otherUser.userId) {
+            list.users.splice(k, 1);
+            break;
+          }
+        }
+        odb.commit([otherUser, list]);
+        
+        res.json({code: 200, message: list.description + " shared with " + otherUserId});
+        console.log(list.description + " shared with " + otherUserId.userId);
+      } else {
+        res.json({code: 200, message: otherUserId + " not found!"});
+        console.log( otherUserId + " not found!");
+      }
     } else {
-      res.json({sessionId: s.sessionId, code: 404, message: "User ('" + otherUserId + "') not found"});
+      res.status(404);
+      res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner"});
+      console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
-    res.json({sessionId: s.sessionId, code: 401, message: "no access"});
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+    console.log("no access");
   }
 });
 

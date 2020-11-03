@@ -15,6 +15,7 @@
 const dboo = require('dboo');
 const config = require('config');
 const user = require('../src/user.js');
+const userid = require('../src/userid.js');
 const list = require('../src/lists.js');
 const parser = require('../src/parser.js');
 
@@ -66,7 +67,9 @@ function defineTypes() {
   odb.define(list.ShoppingList);
   console.log(parser.SiteConfig);
   odb.define(parser.SiteConfig);
-  
+  console.log(userid.UserId);
+  odb.define(userid.UserId);
+
   console.log("Done");
 }
 

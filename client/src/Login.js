@@ -49,18 +49,13 @@ class Login extends Component {
       .post(apiBaseUrl + "login", payload)
       .then(function (response) {
         console.log(response);
-        if (response.data.code === 200) {
+        if (response.status === 200) {
           console.log("Login successful");
           self.props.history.push('/lists');
-        } else if (response.data.code === 401) {
+        } else if (response.status === 401) {
           console.log("Error logging in");
           alert("Error logging in");
-        } else if (response.data.code === 204) {
-          console.log("Username password do not match");
-          alert("username password do not match");
-        } else {
-          console.log("Username does not exists");
-          alert("Username does not exist");
+          self.props.history.push('/');
         }
       })
       .catch(function (error) {

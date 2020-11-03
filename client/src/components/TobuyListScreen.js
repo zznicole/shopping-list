@@ -52,16 +52,13 @@ export default function TobuyListScreen() {
       .get(apiBaseUrl + "getlist?listid=" + listid)
       .then(function (response) {
         try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data.result);
-            
-            fetchingList = true;
-            setTobuys(response.data.result.items);
-          }
+          fetchingList = true;
+          setTobuys(response.data.result.items);
         } catch (e) {
           console.log(e);
         }
+      }).catch(reason => {
+        history.push('/');
       });
   }
   
@@ -77,16 +74,9 @@ export default function TobuyListScreen() {
     axios
       .post(apiBaseUrl + "newitem", {listid: listid, summary: text, description: ""})
       .then(function (response) {
-        try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data);
-            
-            fetchList();
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        fetchList();
+      }).catch(reason => {
+        history.push('/');
       });
   }
   
@@ -95,16 +85,9 @@ export default function TobuyListScreen() {
     axios
       .post(apiBaseUrl + "rmitem", {listid: listid, itemid: id})
       .then(function (response) {
-        try {
-          console.log(response.data.code);
-          if (response.data.code === 200) {
-            console.log(response.data);
-            
-            fetchList();
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        fetchList();
+      }).catch(reason => {
+        history.push('/');
       });
   }
   
@@ -116,24 +99,17 @@ export default function TobuyListScreen() {
         axios
           .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
           .then(function (response) {
-            try {
-              console.log(response.data.code);
-              if (response.data.code === 200) {
-                console.log(response.data);
-          
-                fetchList();
-              }
-            } catch (e) {
-              console.log(e);
-            }
+            fetchList();
+          }).catch(reason => {
+            history.push('/');
           });
         break;
       }
     }
   }
 
-  const goToShare = (id) => {
-    history.push('/share/'+id);
+  const goToShare = () => {
+    history.push('/share/'+listid);
   }
 
   return (

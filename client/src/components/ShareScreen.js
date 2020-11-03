@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import {Link, useParams} from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import { FormControl, Container, TextField, AppBar, Toolbar, Typography, IconButton, Fab } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import axios from "axios";
+import TobuyList from "./TobuyList";
+
+const apiBaseUrl = "/";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,10 +35,13 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
+let doNotFetch = false;
 export default function TobuyForm({ addTobuy }) {
   const classes = useStyles();
-  const history = useHistory();
   const [text, setText] = useState('');
+  const [shares, setShares] = useState([]);
+  const { listid } = useParams();
+  const history = useHistory();
 
   const backToList = () => {
     history.goBack();
@@ -41,9 +49,54 @@ export default function TobuyForm({ addTobuy }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // addTobuy(text);
+    shareWithUser(text);
   };
-
+  
+  
+  function fetchList() {
+    axios
+      .get(apiBaseUrl + "getshares?listid=" + listid)
+      .then(function (response) {
+        try {
+          doNotFetch = true;
+          setShares(response.data.result.items);
+        } catch (e) {
+          console.log(e);
+        }
+      }).catch(reason => {
+        history.push('/');
+      });
+  }
+  
+  useEffect(() => {
+    if (!doNotFetch) {
+      fetchList();
+    } else {
+      doNotFetch = false;
+    }
+  });
+  
+  function shareWithUser(email) {
+    axios
+      .post(apiBaseUrl + "sharelist", {listid: listid, userid: email})
+      .then(function (response) {
+        fetchList();
+      }).catch(reason => {
+        history.push('/');
+      });
+  }
+  
+  function removeShare(id) {
+    axios
+      .post(apiBaseUrl + "rmshare", {listid: listid, userid: id})
+      .then(function (response) {
+          fetchList();
+      }).catch(reason => {
+        history.push('/');
+      });
+  }
+  
+  
   return (
     <Container>
       <AppBar position='fixed'>
@@ -57,7 +110,7 @@ export default function TobuyForm({ addTobuy }) {
             label="Type username here"
             required={true}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={ (e) => {doNotFetch = true; setText(e.target.value)}}
           />
           <Fab
             variant="contained"
@@ -70,6 +123,11 @@ export default function TobuyForm({ addTobuy }) {
           </Fab>
         </FormControl>
       </form>
+      <TobuyList
+        tobuys={shares}
+        checkTobuy={function (id) {}}
+        deleteTobuy={removeShare}
+      />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
             <IconButton edge="start" color="inherit" className={classes.backButton} onClick={backToList}>
