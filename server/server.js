@@ -146,17 +146,11 @@ app.get('/userlists', async function(req, res) {
     results = [];
     for (let list of s.user.lists) {
       let summary = "";
-      for (let i = 0; i < list.items.length && i < 5; ++i) {
+      for (let i = 0; i < list.items.length; ++i) {
         if (i > 0) {
           summary = summary + ", ";
         }
         summary = summary + list.items[i].summary;
-      }
-      len = summary.length;
-      summary = summary.substr(0, 37);
-      // Add ellipses (...) at end (unicode \u2026)
-      if (len > 37) {
-        summary = summary + "\u2026";
       }
       results.push({
         id: odb.objectid(list),
