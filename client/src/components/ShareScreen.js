@@ -64,7 +64,11 @@ export default function TobuyForm({ addTobuy }) {
           console.log(e);
         }
       }).catch(reason => {
-        history.push('/');
+        if (reason.response.status == 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
       });
   }
   
@@ -82,7 +86,11 @@ export default function TobuyForm({ addTobuy }) {
       .then(function (response) {
         fetchList();
       }).catch(reason => {
-        history.push('/');
+        if (reason.response.status == 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
       });
   }
   
@@ -92,7 +100,11 @@ export default function TobuyForm({ addTobuy }) {
       .then(function (response) {
           fetchList();
       }).catch(reason => {
-        history.push('/');
+        if (reason.response.status == 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
       });
   }
   

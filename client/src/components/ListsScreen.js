@@ -63,7 +63,11 @@ export default function ListScreen() {
           console.log(e);
         }
       }).catch(reason => {
-        history.push('/');
+        if (reason.response.status == 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
       });
   }
 
@@ -96,7 +100,11 @@ export default function ListScreen() {
       .then(function (response) {
           fetchLists();
         }).catch(reason => {
-          history.push('/');
+          if (reason.response.status == 401) {
+            history.push('/');
+          } else {
+            alert(reason.response.data.message);
+          }
         });
   }
   
@@ -110,7 +118,11 @@ export default function ListScreen() {
       .then(function (response) {
         history.push('/list/'+response.data.result.listid);
       }).catch(reason => {
-        history.push('/');
+        if (reason.response.status == 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
       });
   }
   
