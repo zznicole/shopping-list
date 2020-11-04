@@ -135,10 +135,11 @@ export default function ListScreen() {
   };
   
   const goToLogin = () => {
-    alert('You are logging out.');
-    axios
-      .get(apiBaseUrl + "logout");
-    history.push('/');
+    if (window.confirm('Do you want to log out?')) {
+      axios
+        .get(apiBaseUrl + "logout");
+      history.push('/');
+    }
   }
   
   return (
