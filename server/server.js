@@ -163,7 +163,9 @@ app.get('/userlists', async function(req, res) {
         title: list.summary,
         subtitle: summary,
         isOwn: s.user.userId === list.owner,
+        owner: list.owner.userId,
         isShared: list.users.length > 0,
+        shareCount: list.users.length,
         isCompleted: list.done,
         itemCount: list.items.length});
     }
@@ -234,8 +236,11 @@ app.get('/getlist', async function(req, res) {
     results = {
       listid: req.query.listid,
       summary: list.summary,
+      isCompleted: list.done,
       isOwn: s.user.userId === list.owner,
+      owner: list.owner.userId,
       isShared: list.users.length > 0,
+      shareCount: list.users.length,
       items: items };
     res.json({code: 200, result: results});
   } else {
@@ -247,7 +252,7 @@ app.get('/getlist', async function(req, res) {
 app.post('/editlist', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
-    let list = odb.object(req.query.listid);
+    let list = odb.object(req.body.listid);
     list.summary = req.body.title;
     list.description = "";
     list.done = req.body.isCompleted;
