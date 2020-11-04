@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import TobuyList from './TobuyList';
 import TobuyForm from './TobuyForm';
@@ -6,8 +6,9 @@ import { Link, useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Toolbar, IconButton} from '@material-ui/core';
-import { Home, Share } from '@material-ui/icons'
+import { AppBar, Toolbar, IconButton } from '@material-ui/core';
+import EdiText from 'react-editext';
+import { Home, SettingsOutlined, Share } from '@material-ui/icons'
 import axios from "axios";
 
 const apiBaseUrl = "/";
@@ -44,6 +45,7 @@ let fetchingList = false;
 export default function TobuyListScreen() {
   const classes = useStyles();
   const [tobuys, setTobuys] = useState([]);
+  const [listTitle, setListTitle] = useState("");
   const { listid } = useParams();
   const history = useHistory();
   
@@ -54,6 +56,7 @@ export default function TobuyListScreen() {
         try {
           fetchingList = true;
           setTobuys(response.data.result.items);
+          setListTitle(response.data.result.summary);
         } catch (e) {
           console.log(e);
         }
@@ -74,6 +77,28 @@ export default function TobuyListScreen() {
     }
   });
   
+  // add a list title
+  function editList(title) {
+    axios
+      .post(apiBaseUrl + "editlist", {summary: title, description: "", done: false})
+      .then(function (response) {
+        fetchList();
+      }).catch(reason => {
+        if (reason.response.status == 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
+      });
+  }
+
+  // give a name to the list
+  function onSave(val) {
+    console.log('Edited Value ->', val);
+    editList(val);
+  }
+
+ // add a tobuy item to the list
   function addTobuy(text) {
     axios
       .post(apiBaseUrl + "newitem", {listid: listid, summary: text, description: ""})
@@ -131,7 +156,7 @@ export default function TobuyListScreen() {
   return (
     <div>
       <AppBar position='fixed'>
-        <Typography variant="h5" align="center" className={classes.header}>Grocery List</Typography>
+        <EdiText variant="h5" align="center" type="text" value="NEW LIST" className={classes.header} onSave={onSave} />
       </AppBar>
       <Toolbar />
       
