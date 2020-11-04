@@ -80,7 +80,7 @@ export default function TobuyListScreen() {
   // add a list title
   function editList(title) {
     axios
-      .post(apiBaseUrl + "editlist", {summary: title, description: "", done: false})
+      .post(apiBaseUrl + "editlist", {listid: listid, summary: title, description: "", done: false})
       .then(function (response) {
         fetchList();
       }).catch(reason => {

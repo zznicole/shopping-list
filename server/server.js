@@ -244,15 +244,17 @@ app.get('/getlist', async function(req, res) {
 });
 
 app.post('/editlist', async function(req, res) {
+  console.log('/editlist');
+  console.log(req.body);
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.body.listid);
-    list.summary = req.body.title;
-    list.description = "";
-    list.done = req.body.isCompleted;
-    odb.commit(item);
+    list.summary = req.body.summary ? req.body.summary : "";
+    list.description = req.body.description ? req.body.description : "";
+    list.done = req.body.done ? req.body.done : "";
+    odb.commit(list);
     
-    res.json({code: 200, itemid: itemid});
+    res.json({code: 200, list: req.body.listid});
   } else {
     res.status(401);
     res.json({code: 401, message: "no access"});
