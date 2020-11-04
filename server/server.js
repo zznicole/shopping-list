@@ -82,21 +82,24 @@ app.get('/newsession', async function(req, res) {
 });
 
 app.get('/logout', async function(req, res) {
-  session.clearSession(req, res);
+  session.clearAllSessionsForUser(req, res);
 });
 
 app.post('/login', async function(req, res) {
   console.log(req.body);
   let s = session.handleSession(req, res);
-  let userid = req.body.userid;
-  let password = req.body.password;
+  let userid = req.body.userid ? req.body.userid : "";
+  let password = req.body.password ? req.body.password : "";
+  let keepLoggedIn = req.body.keepLoggedIn ? req.body.keepLoggedIn : false;
   let pwd = user.findUserPassword(odb, userid);
   if (pwd) {
     if (user.passwordMatches(pwd, password)) {
       console.log("User " + userid + " logged in");
-      s.user = user.findUser(odb, userid);
-      console.log(s.user);
-      if (s.user) {
+      let usr = user.findUser(odb, userid);
+      if (usr) {
+        session.setSessionUser(s, usr, keepLoggedIn);
+        s.keepLoggedIn = keepLoggedIn;
+        console.log(s.user);
         res.json({code: 200, message: "logged in"});
         return;
       }

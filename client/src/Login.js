@@ -8,6 +8,7 @@ import { withRouter } from 'react-router';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const styles = (theme) => ({
   "@global": {
@@ -34,6 +35,7 @@ class Login extends Component {
     this.state = {
       username: "",
       password: "",
+      keepLoggedIn: false
     };
   }
 
@@ -43,6 +45,7 @@ class Login extends Component {
     let payload = {
       userid: self.state.username,
       password: self.state.password,
+      keepLoggedIn: self.state.keepLoggedIn
     };
 
     axios
@@ -107,6 +110,12 @@ class Login extends Component {
                 style={style}
                 onClick={(event) => this.handleClick(event)}
               />
+              <Checkbox
+                checked={this.state.keepLoggedIn}
+                onChange={(event, newValue) =>
+                  this.setState({ keepLoggedIn: !this.state.keepLoggedIn })}
+              />
+              }/>
             </div>
 
           </div>
