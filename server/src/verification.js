@@ -13,7 +13,7 @@ if (true) {
 
 function generateVerificationCode()
 {
-  verificationCode = crypto.randomBytes(2).toString('hex');
+  verificationCode = crypto.randomBytes(8).toString('hex');
   return verificationCode;
 }
 exports.generateVerificationCode = generateVerificationCode;
