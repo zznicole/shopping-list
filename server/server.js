@@ -334,12 +334,14 @@ app.post('/sharelist', async function(req, res) {
       let otherUserId = req.body.userid;
       // Can't share with one self:
       if (list.owner.userId == otherUserId) {
-        res.json({code: 404, message: "Cannot share with yourself"});
+        res.status(403);
+        res.json({code: 403, message: "You cannot share with yourself!"});
         console.log("Cannot share with yourself");
         return;
       }
       if (list.users.find(usrId => usrId.userId == otherUserId) ) {
-        res.json({code: 404, message: "List is already shared with user"});
+        res.status(403);
+        res.json({code: 403, message: "List is already shared with user '" + otherUserId + "'!"});
         console.log("List is already shared with user");
         return;
       }
@@ -352,15 +354,16 @@ app.post('/sharelist', async function(req, res) {
         }
         odb.commit([otherUser, list]);
   
-        res.json({code: 200, message: list.description + " shared with " + otherUserId});
+        res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
         console.log(list.description + " shared with " + otherUserId);
       } else {
-        res.json({code: 200, message: otherUserId + " not found!"});
+        res.status(404);
+        res.json({code: 404, message: "User '" + otherUserId + "' not found!"});
         console.log( otherUserId + " not found!");
       }
     } else {
       res.status(404);
-      res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner"});
+      res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner!"});
       console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
