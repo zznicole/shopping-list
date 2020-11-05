@@ -127,8 +127,11 @@ app.get('/verifyuser', async function(req, res) {
                   req.query.verificationcode,
                   odb);
   // Redirect to screen with "successfully verified" message and a button to login screen
-  res.status(response.code);
-  res.json({message: response.message, code: response.code});
+  if (response.code == 200) {
+    res.redirect(303, hostConfig.URL + "/verified/s");
+  } else {
+    res.redirect(303, hostConfig.URL + "/verified/f");
+  }
 });
 
 // TODO: Move to other file? Admin API
