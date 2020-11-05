@@ -10,6 +10,7 @@ export default function ListItem({
   isCompleted,
   deleteList,
   goToList,
+  sharing
 }) {
   const markCompleted = () => checkList(id);
   const clickOnList = () => goToList(id);
@@ -37,6 +38,9 @@ export default function ListItem({
               </Typography>
               <Typography variant="subtitle1" style={listStyle} color="textSecondary">
                 {subtitle}
+              </Typography>
+              <Typography variant="subtitle2" style={listStyle} color="textSecondary" align={"right"}>
+                {sharing}
               </Typography>
             </CardContent>
             <IconButton style={{ float: 'right' }} onClick={confirmDel}>
