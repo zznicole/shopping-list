@@ -17,6 +17,13 @@ export default function ListItem({
     ? { textDecoration: 'line-through', minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
     : { textDecoration: 'none', minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'  };
   const delList = () => deleteList(id);
+
+  const confirmDel = () => {
+    if (window.confirm('Do you want to delete this list?')) {
+     delList();
+    }
+  }
+  
   return (
     <div>
       <Container>
@@ -32,7 +39,7 @@ export default function ListItem({
                 {subtitle}
               </Typography>
             </CardContent>
-            <IconButton style={{ float: 'right' }} onClick={delList}>
+            <IconButton style={{ float: 'right' }} onClick={confirmDel}>
               <Delete style={{ color: 'red' }} />
             </IconButton>
           </Card>
