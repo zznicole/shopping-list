@@ -115,7 +115,6 @@ class Login extends Component {
                 onChange={(event, newValue) =>
                   this.setState({ keepLoggedIn: !this.state.keepLoggedIn })}
               />
-              }/>
             </div>
 
           </div>
