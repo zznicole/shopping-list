@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton } from '@material-ui/core';
 import EdiText from 'react-editext';
-import { Autorenew, Home, SettingsOutlined, Share } from '@material-ui/icons'
+import { Home, Share } from '@material-ui/icons'
 import axios from "axios";
 
 const apiBaseUrl = "/";
@@ -157,7 +157,7 @@ export default function TobuyListScreen() {
   return (
     <div>
       <AppBar position="fixed" style={{backgroundColor:"#00bcd4"}}>
-        <EdiText variant="h5" type="text" value="NEW LIST" className={classes.header} onSave={onSave} />
+        <EdiText variant="h5" type="text" value={listTitle} className={classes.header} onSave={onSave} />
       </AppBar>
       <Toolbar />
       <TobuyForm addTobuy={addTobuy}  />
