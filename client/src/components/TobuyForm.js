@@ -6,6 +6,7 @@ export default function TobuyForm({ addTobuy }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     addTobuy(text);
+    setText('');
   };
 
   return (
@@ -18,6 +19,7 @@ export default function TobuyForm({ addTobuy }) {
             required={true}
             value={text}
             onChange={(e) => setText(e.target.value)}
+           
           />
           <Fab
             variant="contained"

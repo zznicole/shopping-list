@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Lists from './Lists';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Toolbar, Button, Fab} from '@material-ui/core';
+import { Typography, AppBar, Toolbar, Button, Fab } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import axios from "axios";
 import { useHistory } from 'react-router-dom';
@@ -24,7 +24,11 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 12,
     zIndex: 1,
   },
-  
+
+  lists: {
+    marginBottom: 60,
+  },
+
   appBar: {
     top: 'auto',
     bottom: 0,
@@ -134,6 +138,7 @@ export default function ListScreen() {
     history.push('/list/'+id);
   };
   
+  // log out confirmation
   const goToLogin = () => {
     if (window.confirm('Do you want to log out?')) {
       axios
@@ -156,8 +161,9 @@ export default function ListScreen() {
         checkL={checkList}
         deleteList={deleteList}
         goToList={goToList}
+        className={classes.lists}
       />
-      <AppBar position="fixed" color="primary" className={classes.appBar}>
+      <AppBar  color="primary" className={classes.appBar}>
         <Toolbar>
           <Fab color="secondary" className={classes.fabButton}>
             <Add
@@ -167,7 +173,6 @@ export default function ListScreen() {
         </Toolbar>
       </AppBar>
     </div>
-
   );
 }
 
