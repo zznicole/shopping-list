@@ -74,34 +74,10 @@ function defineTypes() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// function listUsers
-/// Lists all users
+/// function query
+/// Runs the specified query and outputs the returned objects. If new_values is supplied, assigns the object
+/// specified by the json string to the returned objects and commits the result.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function listUsers() {
-  const odb = new dboo.ODB();
-  odb.connect(host, port, dbName, webUserName, webUserPwd);
-  users = [];
-  odb.load_types();
-  odb.query(users, "select<User>()");
-
-  console.log("All users:");
-  console.log(users);
-  console.log("Done");
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// function deleteAllUsers
-/// Lists all users
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function deleteAllUsers() {
-  const odb = new dboo.ODB();
-  odb.connect(host, port, dbName, webUserName, webUserPwd);
-  count = odb.query("erase<User>()");
-
-  console.log("Deleted all users: " + count);
-  console.log("Done");
-}
-
 function query(q, new_values) {
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, webUserPwd);
@@ -121,6 +97,11 @@ function query(q, new_values) {
   }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// function addSiteConfig
+/// Adds new jquery config for the specified host
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function addSiteConfig(host, config) {
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, webUserPwd);
@@ -138,6 +119,10 @@ function addSiteConfig(host, config) {
   odb.commit(sc);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// function listSiteConfig
+/// Shows all site configs. if valid = true, only shows valid configs, otherwise all invalid.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function listSiteConfig(valid) {
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, webUserPwd);
@@ -152,8 +137,13 @@ function listSiteConfig(valid) {
 if ( (process.argv.length < 3) || ["--help", "-h", "help"].includes(process.argv[2])) {
   console.log("Usage: ");             
   console.log(process.argv[0] + " " + process.argv[1] + " <command> [<option1> <option2>... ]");
-  console.log(process.argv[0] + " " + process.argv[1] + " create <root password> <new password for myshoppinglist>");
+  console.log(process.argv[0] + " " + process.argv[1] + " create <root password>");
   console.log(process.argv[0] + " " + process.argv[1] + " updateTypes");
+  console.log(process.argv[0] + " " + process.argv[1] + " query <dboo query>");
+  console.log(process.argv[0] + " " + process.argv[1] + " update <dboo query> <object values>");
+  console.log(process.argv[0] + " " + process.argv[1] + " siteConfigs [valid]");
+  console.log(process.argv[0] + " " + process.argv[1] + " setSiteConfig <host> <jquery filter>");
+  console.log(process.argv[0] + " " + process.argv[1] + " setSiteConfig <host> <jquery>");
 } else if ((process.argv.length == 4) && process.argv[2] == "create") {
   createDatabase (process.argv[3]);
 } else if ((process.argv.length == 3) && process.argv[2] == "updateTypes") {
@@ -168,8 +158,4 @@ if ( (process.argv.length < 3) || ["--help", "-h", "help"].includes(process.argv
   listSiteConfig (process.argv[3] == "valid");
 } else if ((process.argv.length == 5) && process.argv[2] == "setSiteConfig") {
   addSiteConfig (process.argv[3], process.argv[4]);
-} else if ((process.argv.length == 3) && process.argv[2] == "listUsers") {
-  listUsers ();
-} else if ((process.argv.length == 3) && process.argv[2] == "deleteAllUsers") {
-  deleteAllUsers ();
 }
