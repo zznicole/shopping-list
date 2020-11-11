@@ -146,6 +146,17 @@ app.get('/listsessions', async function(req, res) {
   }
 });
 
+app.get('/user', async function(req, res) {
+  let s = session.handleSession(req, res);
+  if (s.user) {
+    results = [s.user.userId];
+    res.json({code: 200, result: results});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
+});
+
 app.get('/userlists', async function(req, res) {
   let s = session.handleSession(req, res);
   if (s.user) {
@@ -158,14 +169,16 @@ app.get('/userlists', async function(req, res) {
         }
         summary = summary + list.items[i].summary;
       }
+      let listIsOwn = s.user.userId === list.owner;
       results.push({
         id: odb.objectid(list),
         title: list.summary,
         subtitle: summary,
-        isOwn: s.user.userId === list.owner,
-        owner: list.owner.userId,
+        isOwn: listIsOwn,
+        owner: list.owner,
         isShared: list.users.length > 0,
         shareCount: list.users.length,
+        sharedWith: listIsOwn ? list.users : [],
         isCompleted: list.done,
         itemCount: list.items.length});
     }
@@ -233,14 +246,16 @@ app.get('/getlist', async function(req, res) {
     for (let item of list.items) {
       items.push({itemid: odb.objectid(item), title: item.summary, isCompleted: item.done});
     }
+    let listIsOwn = s.user.userId === list.owner;
     results = {
       listid: req.query.listid,
       summary: list.summary,
       isCompleted: list.done,
-      isOwn: s.user.userId === list.owner,
-      owner: list.owner.userId,
+      isOwn: listIsOwn,
+      owner: list.owner,
       isShared: list.users.length > 0,
       shareCount: list.users.length,
+      sharedWith: listIsOwn ? list.users : [],
       items: items };
     res.json({code: 200, result: results});
   } else {
@@ -385,7 +400,7 @@ app.get('/getshares', async function(req, res) {
     if (list.owner == s.user.userId) {
       items = [];
       for (let usr of list.users) {
-        items.push({itemid: odb.objectid(usr), title: usr.userId});
+        items.push({itemid: odb.objectid(usr), title: usr.screenName, subtitle: usr.userId});
       }
       results = {listid: req.query.listid, items: items };
       res.json({code: 200, result: results});

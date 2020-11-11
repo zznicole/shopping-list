@@ -8,6 +8,7 @@ export default function TobuyList({ tobuys, checkTobuy, deleteTobuy }) {
         <TobuyItem
           key={tobuy.itemid}
           title={tobuy.title}
+          subtitle={tobuy.subtitle}
           checkTobuy={checkTobuy}
           id={tobuy.itemid}
           isCompleted={tobuy.isCompleted}

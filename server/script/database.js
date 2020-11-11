@@ -106,13 +106,16 @@ function query(q, new_values) {
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, webUserPwd);
   let results = [];
+  odb.load_types();
   count = odb.query(results, q);
   console.log(count + " objects affected");
   console.log(results);
   if (!(new_values === undefined)) {
     let nv = JSON.parse(new_values);
+    
     for (let object of results) {
       Object.assign(object, nv);
+      console.log(object);
     }
     odb.commit(results);
   }
@@ -157,8 +160,10 @@ if ( (process.argv.length < 3) || ["--help", "-h", "help"].includes(process.argv
   defineTypes ();
 } else if ((process.argv.length == 4) && process.argv[2] == "query") {
   query (process.argv[3]);
-} else if ((process.argv.length == 5) && process.argv[2] == "query") {
+} else if ((process.argv.length == 5) && process.argv[2] == "update") {
   query (process.argv[3], process.argv[4]);
+// } else if ((process.argv.length == 5) && process.argv[2] == "insert") {
+//   query (process.argv[3], process.argv[4]);
 } else if ((process.argv.length == 4) && process.argv[2] == "siteConfigs") {
   listSiteConfig (process.argv[3] == "valid");
 } else if ((process.argv.length == 5) && process.argv[2] == "setSiteConfig") {

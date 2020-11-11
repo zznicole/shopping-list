@@ -1,9 +1,10 @@
 import React from 'react';
-import { Container, Card, Typography, IconButton } from '@material-ui/core';
+import {Container, Card, Typography, IconButton, CardContent} from '@material-ui/core';
 import { Check, Delete } from '@material-ui/icons';
 
 export default function TobuyItem({
   title,
+  subtitle,
   checkTobuy,
   id,
   isCompleted,
@@ -11,23 +12,28 @@ export default function TobuyItem({
 }) {
   const markCompleted = () => checkTobuy(id);
   const tobuyItemStyle = isCompleted
-    ? { textDecoration: 'line-through' }
-    : { textDecoration: 'none' };
+    ? { textDecoration: 'line-through', minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+    : { textDecoration: 'none', minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'  };
   const delTobuy = () => deleteTobuy(id);
   return (
     <div>
       <Container>
-        <Typography variant="h5" component="h2" style={tobuyItemStyle}>
-          <Card variant="contained" style={{ marginTop: 5 }}>
-            <IconButton onClick={markCompleted}>
-              <Check style={{ color: 'green' }} />
-            </IconButton>
-            {title}
-            <IconButton style={{ float: 'right' }} onClick={delTobuy}>
-              <Delete style={{ color: 'red' }} />
-            </IconButton>
-          </Card>
-        </Typography>
+        <Card variant="contained" style={{ marginTop: 5, display: 'flex', alignContent: 'space-between', alignItems: 'stretch' }}>
+          <IconButton onClick={markCompleted}>
+            <Check style={{ color: 'green' }} />
+          </IconButton>
+          <CardContent style={{flex: 1, minWidth: 0}}>
+            <Typography variant="h5" component="h2" style={tobuyItemStyle}>
+              {title}
+            </Typography>
+            <Typography variant="subtitle1" style={tobuyItemStyle} color="textSecondary">
+              {subtitle}
+            </Typography>
+          </CardContent>
+          <IconButton style={{ float: 'right' }} onClick={delTobuy}>
+            <Delete style={{ color: 'red' }} />
+          </IconButton>
+        </Card>
       </Container>
     </div>
   );

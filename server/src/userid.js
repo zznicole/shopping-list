@@ -2,14 +2,18 @@ const dboo = require('dboo');
 
 class UserId {
   userId = "";
-  constructor(userid = "") {
+  screenName = "";
+  constructor(userid = "", screenName = "") {
     this.userId = userid;
+    this.screenName = screenName;
   }
 };
 
 exports.UserId = UserId;
 
 dboo.class(UserId,
-  [{"userId": dboo.string}]
+  [{"userId": dboo.string},
+    {"screenName": dboo.string},
+  ]
 );
 

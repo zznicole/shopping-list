@@ -6,10 +6,11 @@ import { Link, useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton } from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
 import EdiText from 'react-editext';
 import { Home, Share } from '@material-ui/icons'
 import axios from "axios";
+import Box from '@material-ui/core/Box';
 
 const apiBaseUrl = "/";
 
@@ -45,8 +46,7 @@ let fetchingList = false;
 
 export default function TobuyListScreen() {
   const classes = useStyles();
-  const [tobuys, setTobuys] = useState([]);
-  const [listTitle, setListTitle] = useState("");
+  const [list, setList] = useState({summary: "",items:[], isOwn: false, isShared:false, shareCount:0, owner:""});
   const { listid } = useParams();
   const history = useHistory();
   
@@ -56,8 +56,9 @@ export default function TobuyListScreen() {
       .then(function (response) {
         try {
           fetchingList = true;
-          setTobuys(response.data.result.items);
-          setListTitle(response.data.result.summary);
+          if (response.data.result) {
+            setList(response.data.result);
+          }
         } catch (e) {
           console.log(e);
         }
@@ -131,8 +132,8 @@ export default function TobuyListScreen() {
   
   function checkTobuy(id) {
     console.log(id);
-    for (let i = 0; i < tobuys.length; ++i) {
-      let tobuy = tobuys[i];
+    for (let i = 0; i < list.items.length; ++i) {
+      let tobuy = list.items[i];
       if (tobuy.itemid == id) {
         axios
           .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
@@ -153,16 +154,63 @@ export default function TobuyListScreen() {
   const goToShare = () => {
     history.push('/share/'+listid);
   }
-
+  
+  function screenName(user) {
+    return user.screenName && user.screenName.length > 0 ? user.screenName : user.userId;
+  }
+  function usersAsString(users) {
+    let usersStr = "";
+    if (users) {
+      for (let u of users) {
+        if (usersStr.length > 0) {
+          usersStr = usersStr + ", ";
+        }
+        usersStr = usersStr + screenName(u);
+      }
+    }
+  
+    return usersStr;
+  }
+  function Sharing() {
+    if (list.isOwn) {
+      if (list.isShared) {
+        return <><IconButton edge="end"  color="inherit" className={classes.shareButton}>
+          <Share onClick={goToShare} />
+        </IconButton>
+          <Box ml={1.5}>
+            <Typography variant={'subtitle'}>
+              Sharing with:
+            </Typography>
+            <Typography variant={'subtitle2'}>
+              {usersAsString(list.sharedWith)}.
+            </Typography>
+          </Box></>;
+      } else {
+        return <IconButton edge="end"  color="inherit" className={classes.shareButton}>
+          <Share onClick={goToShare} />
+        </IconButton>;
+      }
+    }
+    return <><div>
+      <Typography variant={'subtitle'}>
+        Shared by:
+      </Typography>
+      <Typography variant={'subtitle2'}>
+        {screenName(list.owner)}
+      </Typography>
+    </div></>;
+  
+  }
+  
   return (
     <div>
       <AppBar position="fixed" style={{backgroundColor:"#00bcd4"}}>
-        <EdiText variant="h5" type="text" value={listTitle} className={classes.header} onSave={onSave} />
+        <EdiText variant="h5" type="text" value={list.summary} className={classes.header} onSave={onSave} />
       </AppBar>
       <Toolbar />
       <TobuyForm addTobuy={addTobuy}  />
       <TobuyList
-        tobuys={tobuys}
+        tobuys={list.items}
         checkTobuy={checkTobuy}
         deleteTobuy={deleteTobuy}
       />
@@ -173,9 +221,7 @@ export default function TobuyListScreen() {
               <Home />
             </IconButton>
           </Link>
-          <IconButton edge="end"  color="inherit" className={classes.shareButton}>
-              <Share onClick={goToShare} />
-          </IconButton>
+          <Sharing />
         </Toolbar>
       </AppBar>
     </div>

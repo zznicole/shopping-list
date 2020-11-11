@@ -116,7 +116,7 @@ function createUser(userName, email, first_name, last_name, password, odb)
     
     console.log("Create user: " + userName + ", " + email + ", " + first_name + ", " + last_name);
     let verificationCode = verification.generateVerificationCode();
-    let userId = new userid.UserId(userName);
+    let userId = new userid.UserId(userName, first_name + " " + last_name);
     unverifiedUsers[userName] = {
       user: newUser(userId, email, first_name, last_name),
       userpwd: newUserPassword(userId, password),
