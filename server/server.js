@@ -18,6 +18,7 @@ dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
 sslConfig = config.get('ssl');
 
+dboo.init();
 const odb = new dboo.ODB();
 odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
 

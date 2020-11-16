@@ -82,7 +82,6 @@ function query(q, new_values) {
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, webUserPwd);
   let results = [];
-  odb.load_types();
   count = odb.query(results, q);
   console.log(count + " objects affected");
   console.log(results);
@@ -130,6 +129,8 @@ function listSiteConfig(valid) {
   odb.query(results, "select<SiteConfig>(eq(valid, " + (valid ? "1" : "0") + "))");
   console.log(results);
 }
+
+dboo.init();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Execution starts here

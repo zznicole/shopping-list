@@ -11,6 +11,7 @@ let dbName = dbConfig.dbName;
 let webUserName = dbConfig.webUserName;
 let webUserPwd = dbConfig.webUserPwd
 
+dboo.init();
 const odb = new dboo.ODB();
 odb.connect(host, port, dbName, webUserName, webUserPwd);
 

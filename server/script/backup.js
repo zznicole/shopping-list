@@ -14,6 +14,7 @@ let directory = ".";
 let basename = dbConfig.dbName;
 let extension = ".dboo";
 
+dboo.init();
 const odb = new dboo.ODB();
 odb.connect(host, port, dbName, webUserName, webUserPwd);
 
