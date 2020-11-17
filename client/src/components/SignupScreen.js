@@ -16,7 +16,6 @@ import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme) => ({
   screen: {
-    backgroundColor: "#00BCD4",
     backgroundImage: "url('/OSL-bg.png')",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center center",
@@ -29,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   formContainer: {
     maxWidth: "80%",
     maxHeight: "70%",
-    backgroundColor: "#FCF6B1",
+    backgroundColor: "#FCF9d4",
     justifyContent: "center",
     alignItems: "center",
     margin: "auto",
@@ -50,12 +49,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     paddingTop: "3rem",
     paddingBottom: "2rem",
-    display: "relative",
+    position: "relative",
   },
 
   pinIcon: {
-    display: "abslute",
-    top: "5px",
+    position: "absolute",
+    top: "0",
+    right: "50%",
   },
 
   loginBtn: {
@@ -152,7 +152,7 @@ export default function LoginScreen(props) {
             <br />
             <Button
               className={classes.loginBtn}
-              variant="outlined"
+              variant="contained"
               color="secondary"
               onClick={onClickHandler}
             >
@@ -166,10 +166,10 @@ export default function LoginScreen(props) {
             />
             <br />
             <p>Already signed up? Let's log in now!</p>
-            <Link to="/" underline="none">
+            <Link to="/" style={{textDecoration:'none'}}>
               <Button
                 className={classes.signupBtn}
-                variant="contained"
+                variant="outlined"
                 color="secondary"
               >
                 Log In
