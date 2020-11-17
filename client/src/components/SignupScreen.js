@@ -156,7 +156,7 @@ export default function LoginScreen(props) {
               color="secondary"
               onClick={onClickHandler}
             >
-              LOG IN
+              Sign Up
             </Button>
             <br />
             <FormControlLabel control={<Checkbox
@@ -172,7 +172,7 @@ export default function LoginScreen(props) {
                 variant="contained"
                 color="secondary"
               >
-                SIGN UP
+                Log In
               </Button>
             </Link>
           </FormControl>
