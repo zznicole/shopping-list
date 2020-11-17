@@ -3,11 +3,13 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import "./App.css";
 
+import LoginScreen from "./components/LoginScreen";
+import SignScreen from "./components/SignupScreen";
 import VerifyScreen from "./VerifyScreen";
 import ListsScreen from './components/ListsScreen';
 import TobuyListScreen from './components/TobuyListScreen';
 import ShareScreen from './components/ShareScreen';
-import LoginScreen from "./components/LoginScreen";
+
 // import injectTapEventPlugin from "react-tap-event-plugin";
 
 class App extends Component {
@@ -29,6 +31,7 @@ class App extends Component {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact component={LoginScreen} />
+          <Route path="/signup" exact component={SignScreen} />
 
           <Route path="/lists" component={ListsScreen} isPrivate />
           <Route path="/list/:listid" component={TobuyListScreen} isPrivate/>

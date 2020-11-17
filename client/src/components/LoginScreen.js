@@ -8,7 +8,7 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  Icon,
+  
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -48,8 +48,13 @@ const useStyles = makeStyles((theme) => ({
   form: {
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "3rem",
+    paddingTop: "2rem",
     paddingBottom: "2rem",
+  },
+
+  pinIcon: {
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
 
   loginBtn: {
@@ -70,15 +75,10 @@ export default function LoginScreen(props) {
   const history = useHistory();
 
   const apiBaseUrl = "/";
-  let payload = {
-    userid: username,
-    password: password,
-    keepLoggedIn: keepLoggedIn,
-  };
 
   const onClickHandler = (event) => {
     axios
-      .post(apiBaseUrl + "login", payload)
+      .post(apiBaseUrl + "login", [])
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {
@@ -99,7 +99,7 @@ export default function LoginScreen(props) {
     <div className={classes.screen}>
       <Container className={classes.formContainer}>
         <form className={classes.form}>
-          <FontAwesomeIcon icon="thumbtack" rotation={45} />
+          <FontAwesomeIcon className={classes.pinIcon} icon={faThumbtack} color="red"  transform={{ rotate: 42 }} />
           <h1 className={classes.heading}>Our Shopping List</h1>
           <FormControl>
             <TextField
