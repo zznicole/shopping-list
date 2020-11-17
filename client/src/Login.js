@@ -1,5 +1,4 @@
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import AppBar from "material-ui/AppBar";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import React, { Component } from "react";
@@ -7,13 +6,12 @@ import axios from "axios";
 import { withRouter } from 'react-router';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 
 const styles = (theme) => ({
   "@global": {
     body: {
-      backgroundImage: "url('/grocery.png')",
+      backgroundImage: "url('/OSL-bg.png')",
       backgroundRepeat: "no-repeat",
       backgroundPosition: "center center",
       backgroundSize: "cover",
@@ -72,14 +70,12 @@ class Login extends Component {
         <MuiThemeProvider>
           <CssBaseline />
           <div >
-            <AppBar title="LOG IN" />
+            
             <div style={{
         position: 'absolute', left: '50%', top: '40%',
         transform: 'translate(-50%, -50%)'
     }}>
-              <div>
-                <Typography variant="h3" color="orange">OUR SHOPPING LIST</Typography>
-              </div>
+            
               <TextField
                 hintText="Enter your Username"
                 id="standard-basic"
