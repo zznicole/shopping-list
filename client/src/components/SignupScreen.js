@@ -80,8 +80,15 @@ export default function LoginScreen(props) {
 
 
   const onClickHandler = (event) => {
+    let payload = {
+      userid: email,
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password,
+    };
     axios
-      .post(apiBaseUrl + "signup", [])
+      .post(apiBaseUrl + "signup", payload)
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {

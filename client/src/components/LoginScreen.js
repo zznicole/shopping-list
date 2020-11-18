@@ -78,8 +78,13 @@ export default function LoginScreen(props) {
   const apiBaseUrl = "/";
 
   const onClickHandler = (event) => {
+    let payload = {
+      userid: username,
+      password: password,
+      keepLoggedIn: keepLoggedIn
+    };
     axios
-      .post(apiBaseUrl + "login", [])
+      .post(apiBaseUrl + "login", payload)
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {

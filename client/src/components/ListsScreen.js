@@ -163,6 +163,9 @@ export default function ListScreen() {
         goToList={goToList}
         className={classes.lists}
       />
+      <br />
+      <br />
+      <br />
       <AppBar  color="primary" className={classes.appBar}>
         <Toolbar>
           <Fab color="secondary" className={classes.fabButton}>

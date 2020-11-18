@@ -214,6 +214,9 @@ export default function TobuyListScreen() {
         checkTobuy={checkTobuy}
         deleteTobuy={deleteTobuy}
       />
+      <br />
+      <br />
+      <br />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Link to='/lists'>
