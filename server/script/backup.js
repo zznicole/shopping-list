@@ -14,6 +14,10 @@ let directory = ".";
 let basename = dbConfig.dbName;
 let extension = ".dboo";
 
+if ((process.argv.length == 3)) {
+  directory = process.argv[2];
+}
+
 dboo.init();
 const odb = new dboo.ODB();
 odb.connect(host, port, dbName, webUserName, webUserPwd);
