@@ -1,15 +1,18 @@
 #!/bin/bash
 
+keys_file="${HOME}/src/shoppinglist_config/ec2_key.pem"
+local_build_dir="${HOME}/src/shoppinglist_build"
+
 server_user=ubuntu
 server_address=13.53.58.58
-keys_file="~/Documents/projects/shoppinglist/aws/ec2/keys/TestAccountStockholm.pem"
-local_build_dir="${HOME}/src/shoppinglist_build"
-server_base_dir="/home/ubuntu/shopping-list"
+user_home_dir="/home/ubuntu"
+server_base_dir="${user_home_dir}/shopping-list"
+server_current_dir="${server_base_dir}/shoppinglist_current"
 datetime=`date '+%Y%m%d_%H%M%S' `
 server_install_dir="${server_base_dir}/shoppinglist_${datetime}"
-server_current_dir="${server_base_dir}/shoppinglist_current"
-server_config_dir="/home/ubuntu/config"
-server_backup_dir="/home/ubuntu/db-backups"
+server_test_dir="${server_base_dir}/shoppinglist_test"
+server_config_dir="${user_home_dir}/config"
+server_backup_dir="${user_home_dir}/db-backups"
 
 # 1. clone locally/pull
 echo "local build dir: ${local_build_dir}"
@@ -28,6 +31,8 @@ echo "getting source from github...done"
 echo "building client..."
 cd client
 npm install
+npm install @fortawesome/react-fontawesome
+npm install @fortawesome/free-solid-svg-icons
 npm run-script build
 cd ..
 echo "building client...done"
@@ -56,10 +61,10 @@ ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}
 echo "install server node modules...done"
 
 # 5. backup database - assuming server scripts are already there
-if ssh ${server_user}@${server_address} '[ -d ${server_current_dir} ]'; then
+if ssh -i "${keys_file}" ${server_user}@${server_address} '[ -e ${server_current_dir} ]'; then
   echo "there is a server already"
   echo "stopping server..."
-  ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_current_dir}/server/; sudo pm2 stop server.js"
+  ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_current_dir}/server/; sudo pm2 delete server"
   echo "stopping server...done"
 else
   echo "there is no server to stop"
@@ -70,7 +75,7 @@ echo "making backup of database...done"
 
 # 6. switching current link
 echo "switching current link to ${server_install_dir}"
-if ssh ${server_user}@${server_address} '[ -d ${server_current_dir} ]'; then
+if ssh -i "${keys_file}" ${server_user}@${server_address} '[ -e ${server_current_dir} ]'; then
   ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_base_dir}; rm ${server_current_dir}"
 fi
 ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_base_dir}; ln -s ${server_install_dir} ${server_current_dir}"
