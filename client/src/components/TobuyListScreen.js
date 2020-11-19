@@ -79,7 +79,7 @@ export default function TobuyListScreen() {
     }
   });
   
-  // add a list title
+// add a list title
   function editList(title) {
     axios
       .post(apiBaseUrl + "editlist", {listid: listid, summary: title, description: "", done: false})
@@ -94,13 +94,13 @@ export default function TobuyListScreen() {
       });
   }
 
-  // give a name to the list
+// give a name to the list
   function onSave(val) {
     console.log('Edited Value ->', val);
     editList(val);
   }
 
- // add a tobuy item to the list
+// add a tobuy item to the list
   function addTobuy(text) {
     axios
       .post(apiBaseUrl + "newitem", {listid: listid, summary: text, description: ""})
@@ -151,6 +151,7 @@ export default function TobuyListScreen() {
     }
   }
 
+//share the list
   const goToShare = () => {
     history.push('/share/'+listid);
   }
