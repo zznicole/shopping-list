@@ -11,7 +11,7 @@ export default function TobuyItem({
   isCompleted,
   deleteTobuy,
 }) {
-  const [newText, setNewText ] = useState("");
+  const [newTitle, setNewTitle ] = useState("");
   const markCompleted = () => checkTobuy(id);
   const tobuyItemStyle = isCompleted
     ? { textDecoration: 'line-through', minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
@@ -25,8 +25,8 @@ export default function TobuyItem({
             <Check style={{ color: 'green' }} />
           </IconButton>
           <CardContent style={{flex: 1, minWidth: 0}}>
-            <Editable text={newText} placeholder={title} type="input"> 
-              <input type="text" name="newText" placeholder={title} value={newText} onChange={e=> setNewText(e.target.value)} />
+            <Editable text={newTitle} placeholder={title} type="input"> 
+              <input type="text" name="newTitle" placeholder={title} value={newTitle} onChange={e=> setNewTitle(e.target.value)} />
             </Editable>
             {/* <Typography variant="h5" component="h2" style={tobuyItemStyle}>
               {title}
