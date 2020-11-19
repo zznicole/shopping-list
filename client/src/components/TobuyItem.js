@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Editable from './Editable';
 import {Container, Card, Typography, IconButton, CardContent} from '@material-ui/core';
 import { Check, Delete } from '@material-ui/icons';
 
@@ -10,6 +11,7 @@ export default function TobuyItem({
   isCompleted,
   deleteTobuy,
 }) {
+  const [newText, setNewText ] = useState("");
   const markCompleted = () => checkTobuy(id);
   const tobuyItemStyle = isCompleted
     ? { textDecoration: 'line-through', minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
@@ -23,12 +25,15 @@ export default function TobuyItem({
             <Check style={{ color: 'green' }} />
           </IconButton>
           <CardContent style={{flex: 1, minWidth: 0}}>
-            <Typography variant="h5" component="h2" style={tobuyItemStyle}>
+            <Editable text={newText} placeholder={title} type="input"> 
+              <input type="text" name="newText" placeholder={title} value={newText} onChange={e=> setNewText(e.target.value)} />
+            </Editable>
+            {/* <Typography variant="h5" component="h2" style={tobuyItemStyle}>
               {title}
             </Typography>
             <Typography variant="subtitle1" style={tobuyItemStyle} color="textSecondary">
               {subtitle}
-            </Typography>
+            </Typography> */}
           </CardContent>
           <IconButton style={{ float: 'right' }} onClick={delTobuy}>
             <Delete style={{ color: 'red' }} />
