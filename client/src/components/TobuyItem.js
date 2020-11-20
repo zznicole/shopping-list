@@ -25,7 +25,7 @@ export default function TobuyItem({
             <Check style={{ color: 'green' }} />
           </IconButton>
           <CardContent style={{flex: 1, minWidth: 0}}>
-            <Editable text={newTitle} placeholder={title} type="input"> 
+            <Editable text={newTitle} placeholder={title} type="input" style={tobuyItemStyle}> 
               <input type="text" name="newTitle" placeholder={title} value={newTitle} onChange={e=> setNewTitle(e.target.value)} />
             </Editable>
             {/* <Typography variant="h5" component="h2" style={tobuyItemStyle}>

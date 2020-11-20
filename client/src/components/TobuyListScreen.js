@@ -151,7 +151,28 @@ export default function TobuyListScreen() {
     }
   }
 
-//share the list
+  // function updateTobuy(id) {
+  //   console.log(id);
+  //   for (let i = 0; i < list.items.length; ++i) {
+  //     let tobuy = list.items[i];
+  //     if (tobuy.itemid === id) {
+  //       axios
+  //         .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
+  //         .then(function (response) {
+  //           fetchList();
+  //         }).catch(reason => {
+  //           if (reason.response.status === 401) {
+  //             history.push('/');
+  //           } else {
+  //             alert(reason.response.data.message);
+  //           }
+  //         });
+  //       break;
+  //     }
+  //   }
+  // }
+
+// share the list
   const goToShare = () => {
     history.push('/share/'+listid);
   }
