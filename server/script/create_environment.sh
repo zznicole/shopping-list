@@ -4,7 +4,7 @@
 # Creates config file, dboo database
 
 read -p 'Environment: ' environment
-read -p 'Website domain: [www.ourshoppinglist.online]: ' web_host
+read -p 'Website domain [www.ourshoppinglist.online]: ' web_host
 web_host=${web_host:-www.ourshoppinglist.online}
 read -p 'HTTP port [80]: ' http_port
 http_port=${http_port:-80}
@@ -23,7 +23,7 @@ db_host=${db_host:-localhost}
 read -p 'Db server port [8822]: ' db_port
 db_port=${db_port:-8822}
 default_db_name=`echo ${web_host} | awk -F. '{print $(NF-1) }'`_${environment}
-read -p "Database name: [${default_db_name}] " db_name
+read -p "Database name [${default_db_name}]: " db_name
 db_name=${db_name:-${default_db_name}}
 read -p "Database user id [user_${db_name}]: " db_user
 db_user=${db_user:-user_${db_name}}
