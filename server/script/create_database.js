@@ -66,7 +66,7 @@ var schema = {
 prompt.start();
 
 //
-// Get two properties from the user: email, password
+// Get two properties from the user: root user id and root password
 //
 prompt.get(schema, function (err, result) {
   if (err) {

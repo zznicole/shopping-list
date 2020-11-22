@@ -1,3 +1,5 @@
+console.log("Environment: " + process.env.NODE_ENV);
+
 const express = require('express');
 const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser')
@@ -19,8 +21,15 @@ hostConfig = config.get('hostConfig');
 sslConfig = config.get('ssl');
 
 dboo.init();
+
+console.log("Database details");
+console.log("db host: " + dbConfig.host);
+console.log("db port: " + dbConfig.port);
+console.log("db name: " + dbConfig.dbName);
+console.log("db user: " + dbConfig.webUserName);
+
 const odb = new dboo.ODB();
-odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
+odb.connect(dbConfig.host, Number(dbConfig.port), dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
 
 parser.init(odb);
 

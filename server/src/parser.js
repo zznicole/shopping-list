@@ -114,7 +114,8 @@ class SiteConfigs {
   }
   set(cfg) {
     let results = [];
-    this.odb.query(results, "select<SiteConfig>(eq(host, '" + cfg.host + "'))");
+    let query = "select<SiteConfig>(eq(host, '" + cfg.host + "'))";
+    this.odb.query(results, query);
     if (results.length == 1) {
       results[0].receiptsEnclosingElement = cfg.receiptsEnclosingElement;
       results[0].valid = true;

@@ -104,4 +104,34 @@ New items
 Parser
 ------
 
+Server Environment
+==================
+
+Server
+------
+Amazon EC2 t3 micro
+
+DNS configuration
+-----------------
+loopia.se
+
+Ensure the A records for *, www points to EC2 static IP address.
+Add domain _amzonses with a TXT record with the verification key from Amazon SES.
+Add SPF record
+Add DKIM records
+
+Emails
+------
+Verification emails etc are sent using either
+
+* node-mailer, or
+* Amazon SES,
+
+depending on configuration. 
+
+Verify domain
+aws-sdk
+IAM user, group and policy
+SPF
+DKIM
 
