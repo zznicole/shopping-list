@@ -81,7 +81,7 @@ export default function LoginScreen(props) {
     let payload = {
       userid: username,
       password: password,
-      keepLoggedIn: keepLoggedIn
+      keepLoggedIn: true,
     };
     axios
       .post(apiBaseUrl + "login", payload)
@@ -142,7 +142,7 @@ export default function LoginScreen(props) {
             <br />
             <FormControlLabel control={<Checkbox
               checked={keepLoggedIn}
-              onChange={(e) => setKeepLoggedIn()} />}
+              onChange={(event, newValue) => setKeepLoggedIn({ keepLoggedIn: !keepLoggedIn})} />}
               label="Keep me logged in."
             />
             <br />

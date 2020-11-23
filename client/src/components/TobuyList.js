@@ -1,7 +1,7 @@
 import React from 'react';
 import TobuyItem from './TobuyItem';
 
-export default function TobuyList({ tobuys, checkTobuy, deleteTobuy }) {
+export default function TobuyList({ tobuys, checkTobuy, deleteTobuy, editTobuy }) {
   return (
     <div>
       {tobuys.map((tobuy) => (
@@ -13,6 +13,7 @@ export default function TobuyList({ tobuys, checkTobuy, deleteTobuy }) {
           id={tobuy.itemid}
           isCompleted={tobuy.isCompleted}
           deleteTobuy={deleteTobuy}
+          editTobuy={editTobuy}
         />
       ))}
     </div>
