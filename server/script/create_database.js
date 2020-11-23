@@ -30,10 +30,19 @@ let webUserPwd = dbConfig.webUserPwd
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 dboo.init();
 
-function createDatabase(rootUser, rootPwd) {
+function createDatabase(rootUser, rootPwd, dropExisting) {
   console.log("Connecting as " + rootUser.toString());
   const odb = new dboo.ODB();
   odb.connect(host, port, "dboo::server", rootUser, rootPwd);
+  
+  if (dropExisting) {
+    if (process.env.NODE_ENV == "prod") {
+      console.log("Cannot drop prod database, exiting!");
+      return;
+    }
+    console.log(`Dropping database ${dbName}`);
+    odb.drop_database(dbName);
+  }
   
   console.log("Creating group, db and web user:");
   console.log("Group: " + dbGroup);
@@ -56,6 +65,10 @@ var schema = {
       hidden: true,
       replace: '*',
       default: ''
+    },
+    drop_db: {
+      description: 'Drop old db [yes/no]',
+      default: 'no',
     }
   }
 };
@@ -73,5 +86,5 @@ prompt.get(schema, function (err, result) {
     console.log(err);
     return 1;
   }
-  createDatabase(result.userid, result.password);
+  createDatabase(result.userid, result.password, result.drop_db == "yes");
 });

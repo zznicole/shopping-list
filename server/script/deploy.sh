@@ -5,6 +5,7 @@ environment=${1}
 create_db=false
 update_types=false
 do_build=true
+clone_db=false
 for var in "$@"
 do
     if [[ "${var}" == "--create-db" ]]; then
@@ -15,6 +16,12 @@ do
     fi
     if [[ "${var}" == "--skip-build" ]]; then
       do_build=false
+    fi
+    if [[ "${var}" =~ ^--clone-.*$ ]]; then
+      create_db=true
+      clone_db=true
+      cloned_env=$(echo ${var}| cut -d'-' -f 4)
+      echo "cloning ${cloned_env}"
     fi
 done
 
@@ -38,6 +45,8 @@ if [[ ! "${environment}" =~ ^(test1|test2|staging|prod)$ ]]; then
 fi
 
 if [[ "${environment}" == "prod" ]]; then
+  # Cannot drop prod db:
+  drop_db=false
   echo "Are you sure you want to deploy straight to prod? It may be better to:"
   echo "1. Deploy to staging: ${0} staging"
   echo "2. Test on staging ports"
@@ -83,6 +92,7 @@ if [[ "${environment}" =~ ^(staging|prod)$ ]]; then
   echo "getting source from github..."
   if [[ -d "${local_build_dir}/.git" ]]; then
     cd ${local_build_dir}
+    git reset --hard
     git pull
   else
     mkdir -p ${local_build_dir}
@@ -152,17 +162,25 @@ echo "install server node modules...done"
 
 #################################################################################
 # 6. backup database
+make_db_backup=false
 if ssh -i "${keys_file}" ${server_user}@${server_address} "[ -e ${server_current_dir} ]"; then
   echo "there is a server already"
   echo "stopping server..."
   ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_current_dir}/server/; sudo pm2 delete ${environment}"
   echo "stopping server...done"
+  make_db_backup=true
 else
+  echo "there is no server to stop, create database"
   create_db=true
 fi
 
+if [ "${make_db_backup}" = true ] ; then
+  echo "making backup of database..."
+  ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/backup.js ${server_backup_dir}"
+  echo "making backup of database...done"
+fi
+
 if [ "${create_db}" = true ] ; then
-  echo "there is no server to stop, create database"
   ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/create_database.js"
   update_types=true
 fi
@@ -171,9 +189,9 @@ if [ "${update_types}" = true ] ; then
   ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/define_types.js"
 fi
 
-echo "making backup of database..."
-ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/backup.js ${server_backup_dir}"
-echo "making backup of database...done"
+if [ "${clone_db}" = true ] ; then
+  ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/clone_objects.js ${cloned_env} ${environment}"
+fi
 
 #################################################################################
 # 7. switching current link
