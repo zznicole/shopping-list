@@ -151,26 +151,26 @@ export default function TobuyListScreen() {
     }
   }
 
-  // function updateTobuy(id) {
-  //   console.log(id);
-  //   for (let i = 0; i < list.items.length; ++i) {
-  //     let tobuy = list.items[i];
-  //     if (tobuy.itemid === id) {
-  //       axios
-  //         .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
-  //         .then(function (response) {
-  //           fetchList();
-  //         }).catch(reason => {
-  //           if (reason.response.status === 401) {
-  //             history.push('/');
-  //           } else {
-  //             alert(reason.response.data.message);
-  //           }
-  //         });
-  //       break;
-  //     }
-  //   }
-  // }
+  function editTobuy(id, newTitle) {
+    console.log(id);
+    for (let i = 0; i < list.items.length; ++i) {
+      let tobuy = list.items[i];
+      if (tobuy.itemid === id) {
+        axios
+          .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: tobuy.isCompleted, summary:newTitle})
+          .then(function (response) {
+            fetchList();
+          }).catch(reason => {
+            if (reason.response.status === 401) {
+              history.push('/');
+            } else {
+              alert(reason.response.data.message);
+            }
+          });
+        break;
+      }
+    }
+  }
 
 // share the list
   const goToShare = () => {
@@ -235,6 +235,7 @@ export default function TobuyListScreen() {
         tobuys={list.items}
         checkTobuy={checkTobuy}
         deleteTobuy={deleteTobuy}
+        editTobuy={editTobuy}
       />
       <br />
       <br />
