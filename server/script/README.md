@@ -1,16 +1,18 @@
+Scripts for managing environments and deployment
+================================================
 There are a few useful scripts for deployment:
 
 - **create_environment.sh** can create a new test/stage/prod environment on the server.
 - **deploy.sh** can build and deploy code to any environment on the server (which must have been created with create_environment.sh. 
 - **move_staging_to_prod.sh** moves the current staging environment into prod environment. Only the code is moved, not the data.
 
-For both scripts, a key file must exist to enable ssh access to the server.
+These scripts are run on your working PC and uses ssh to perform tasks on the server machine. For all scripts, a key file must exist to enable ssh access to the server.
 
 create_environment.sh
 ---------------------
 _create_environment.sh_
 
-This script will ask the user for each parameter. The most important is the environment name, http port and https port. Other parameters can be defaulted. Environment name cannot exist before and should be descriptive. http port and https port should be unique among all environments, and it is these ports that are used when accessing the web site. The firewall must be set to let through any requests to these ports (do that through the AWS EC2 management console).
+Creates a new environment on a server. This script will ask the user for each parameter. The most important is the environment name, http port and https port. Other parameters can be defaulted. Environment name cannot exist before and should be descriptive. http port and https port should be unique among all environments, and it is these ports that are used when accessing the web site. The firewall must be set to let through any requests to these ports (do that through the AWS EC2 management console).
 
 Example:
 ```
@@ -38,7 +40,7 @@ deploy.sh
 
 _deploy.sh \<environment\> [options ...]_
 
-This script will for prod and staging clone or pull the source code from github and build the client code. For test environments it will use the code as is in the current working copy of the git repo.
+Builds webpack for the client and copies files to a specified server environment. This script will for prod and staging clone or pull the source code from github and build the client code. For test environments it will use the code as is in the current working copy of the git repo.
 It will copy all built files for the client and all necessary source files and scripts for the server to the correct environment directory, stop the current node instance for that environment, reset symbolic links to the updated code and start node by using pm2. If the environment does not exist, the script will also create the database, database user and group.
 Options:
 
