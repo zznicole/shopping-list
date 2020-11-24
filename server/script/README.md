@@ -6,12 +6,14 @@ There are a few useful scripts for deployment:
 
 For both scripts, a key file must exist to enable ssh access to the server.
 
-**create_environment.sh**
+create_environment.sh
+---------------------
 _create_environment.sh_
+
 This script will ask the user for each parameter. The most important is the environment name, http port and https port. Other parameters can be defaulted. Environment name cannot exist before and should be descriptive. http port and https port should be unique among all environments, and it is these ports that are used when accessing the web site. The firewall must be set to let through any requests to these ports (do that through the AWS EC2 management console).
 
 Example:
-`
+```
 create_environment.sh
 Environment: **test2**
 Website domain [www.ourshoppinglist.online]: **\<Enter\>**
@@ -29,11 +31,13 @@ Database user password [generate]:  **\<Enter\>**
 ...
 }
 .temp.test2.json                                                                                                                                      100%  443    55.3KB/s   00:00    
+```
 
-`
+deploy.sh
+---------
 
-**deploy.sh**
 _deploy.sh \<environment\> [options ...]_
+
 This script will for prod and staging clone or pull the source code from github and build the client code. For test environments it will use the code as is in the current working copy of the git repo.
 It will copy all built files for the client and all necessary source files and scripts for the server to the correct environment directory, stop the current node instance for that environment, reset symbolic links to the updated code and start node by using pm2. If the environment does not exist, the script will also create the database, database user and group.
 Options:
@@ -44,21 +48,24 @@ Options:
 - **--clone-\<env\>** Clones all objects from _env_. If specified, create-db will be invoked as well. Do only on empty databases. 
 
 Examples:
-`
+```
 deploy.sh staging --update-types
-`
-`
+```
+```
 deploy.sh test2 --skip-build --create-db
-`
-`
+```
+```
 deploy.sh test2 --skip-build --clone-prod
-`
+```
 
-**move_staging_to_prod.sh**
+move_staging_to_prod.sh
+-----------------------
+
 _move_staging_to_prod.sh_
+
 Makes the current staging code the new production code. Stops both prod and staging servers. Removes the prod link to the server and client files. Renames the staging link to prod. Restarts the prod node server.
 
 Example:
-`
-_move_staging_to_prod.sh_
-`
+```
+ ./move_staging_to_prod.sh
+```
