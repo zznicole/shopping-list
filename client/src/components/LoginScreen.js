@@ -76,6 +76,11 @@ export default function LoginScreen(props) {
   const history = useHistory();
 
   const apiBaseUrl = "/";
+  
+  let loggedIn = document.cookie.replace(/(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  if (loggedIn) {
+    history.push("/lists");
+  }
 
   const onClickHandler = (event) => {
     let payload = {

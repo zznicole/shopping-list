@@ -65,6 +65,7 @@ function handleSession(req, res) {
   sessions[s.sessionId] = s;
   s.lastAccess = Date.now();
   res.cookie('sessionId', s.sessionId, { maxAge:900000, httpsOnly:true});
+  res.clearCookie('loggedIn');
   return s;
 }
 
@@ -80,6 +81,7 @@ function clearSession(req, res) {
     }
     delete sessions[sessionid];
     res.clearCookie('sessionId');
+    res.clearCookie('loggedIn');
   }
 }
 

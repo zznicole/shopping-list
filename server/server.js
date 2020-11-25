@@ -110,6 +110,7 @@ app.post('/login', async function(req, res) {
         session.setSessionUser(s, usr, keepLoggedIn);
         s.keepLoggedIn = keepLoggedIn;
         console.log(s.user);
+        res.cookie('loggedIn', true);
         res.json({code: 200, message: "logged in"});
         return;
       }
