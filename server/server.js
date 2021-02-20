@@ -2,13 +2,14 @@ console.log("Environment: " + process.env.NODE_ENV);
 
 const express = require('express');
 const bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
 const dboo = require('dboo');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-var path = require('path');
-var parser = require('./src/parser');
+const path = require('path');
+const parser = require('./src/parser');
+const aggregator = require('./src/aggregator');
 
 const user = require('./src/user.js');
 const session = require('./src/session.js');
@@ -32,12 +33,13 @@ const odb = new dboo.ODB();
 odb.connect(dbConfig.host, Number(dbConfig.port), dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
 
 parser.init(odb);
+aggregator.init(odb);
 
 let categories = [];
 let defaultCategory;
-odb.query(categories, "select<Category>(eq(summary,'default'))");
+odb.query(categories, "select<Category>(eq(summary,'Other'))");
 if (categories.length == 0) {
-  defaultCategory = lists.createCategory("default");
+  defaultCategory = lists.createCategory("Other");
   odb.commit(defaultCategory);
 } else {
   defaultCategory = categories[0];
@@ -249,13 +251,81 @@ app.post('/rmlist', async function(req, res) {
   }
 });
 
-app.get('/getlist', async function(req, res) {
+app.get('/mapitems', async function(req, res) {
+  console.log('/mapitems');
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.query.listid);
-    let items = [];
+    aggregator.mapAllItems(odb, list);
+    console.log(list);
+    res.json({code: 200});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+
+app.get('/aggregatedlist', async function(req, res) {
+  console.log('/aggregatedlist');
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.query.listid);
+    aggregator.mapAllItems(odb, list);
+    
+    let items = new Map();
+    
     for (let item of list.items) {
-      items.push({itemid: odb.objectid(item), title: item.summary, isCompleted: item.done});
+      let category = item.category;
+      if (!category)  {
+        category = defaultCategory;
+      }
+      if (!items.has(category)) {
+        items.set(category, []);
+      }
+      items.get(category).push(item);
+      console.log(category.summary + ": " + item.summary);
+    }
+    
+    let aggregatedList = [];
+    for (let category of items.keys()) {
+      if (!category) {
+        continue;
+      }
+      subtitle = "";//category.description;
+      aggregatedList.push({
+        itemid: odb.objectid(category),
+        title: category.summary,
+        subtitle: subtitle,
+        itemType: "header",
+        isCompleted: false
+      });
+      
+      let subList = items.get(category);
+      subList.sort(function (a,b){
+        if (a.itemType && b.itemType) {
+          let strA = a.itemType.translations[0].toString();
+          let strB = b.itemType.translations[0].toString();
+          return strA.localeCompare(strB);
+        }
+        return a.summary.localeCompare(b.summary);
+      });
+      for (let item of subList) {
+        let subtitle = "";
+        if (item.itemType) {
+          subtitle += item.itemType.translations[0];
+        }
+        if (item.category) {
+          subtitle += " [" + item.category.summary + "]";
+        }
+        aggregatedList.push({
+          itemid: odb.objectid(item),
+          title: item.summary,
+          subtitle: subtitle,
+          itemType: "normal",
+          isCompleted: item.done
+        });
+      }
     }
     let listIsOwn = s.user.userId === list.owner;
     results = {
@@ -267,7 +337,49 @@ app.get('/getlist', async function(req, res) {
       isShared: list.users.length > 0,
       shareCount: list.users.length,
       sharedWith: listIsOwn ? list.users : [],
-      items: items };
+      items: aggregatedList,
+      aggregated: true};
+    res.json({code: 200, result: results});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+app.get('/getlist', async function(req, res) {
+  console.log('/getlist');
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.query.listid);
+    let items = [];
+    for (let item of list.items) {
+      let subtitle = "";
+      if (item.itemType) {
+        subtitle += item.itemType.translations[0];
+      }
+      if (item.category) {
+        subtitle += " [" + item.category.summary + "]";
+      }
+      items.push({
+        itemid: odb.objectid(item),
+        title: item.summary,
+        subtitle: subtitle,
+        itemType: "normal ",
+        isCompleted: item.done
+      });
+    }
+    let listIsOwn = s.user.userId === list.owner;
+    results = {
+      listid: req.query.listid,
+      summary: list.summary,
+      isCompleted: list.done,
+      isOwn: listIsOwn,
+      owner: list.owner,
+      isShared: list.users.length > 0,
+      shareCount: list.users.length,
+      sharedWith: listIsOwn ? list.users : [],
+      items: items,
+      aggregated: false };
     res.json({code: 200, result: results});
   } else {
     res.status(401);
@@ -411,7 +523,7 @@ app.get('/getshares', async function(req, res) {
     if (list.owner == s.user.userId) {
       items = [];
       for (let usr of list.users) {
-        items.push({itemid: odb.objectid(usr), title: usr.screenName, subtitle: usr.userId});
+        items.push({itemid: odb.objectid(usr), title: usr.screenName + " (" + usr.userId + ")", subtitle: usr.userId});
       }
       results = {listid: req.query.listid, items: items };
       res.json({code: 200, result: results});

@@ -4,6 +4,7 @@ const user = require('../src/user.js');
 const userid = require('../src/userid.js');
 const list = require('../src/lists.js');
 const parser = require('../src/parser.js');
+const aggregator = require('../src/aggregator.js');
 
 dbConfig = config.get('dbConfig');
 var host = dbConfig.host;
@@ -39,6 +40,12 @@ function define_types() {
   odb.define(parser.SiteConfig);
   console.log(userid.UserId);
   odb.define(userid.UserId);
+  console.log(aggregator.Word);
+  odb.define(aggregator.Word);
+  console.log(aggregator.WordCategory);
+  odb.define(aggregator.WordCategory);
+  console.log(aggregator.Config);
+  odb.define(aggregator.Config);
   
   console.log("Done");
 }

@@ -2,11 +2,24 @@ const dboo = require('dboo');
 const parser = require('./parser.js');
 const userid = require('./userid.js');
 
+class ItemType
+{
+  constructor() {
+  }
+}
+exports.ItemType = ItemType;
+
+dboo.class(ItemType,
+  []
+);
+
 class Category
 {
   summary = "";
   description = "";
-  constructor() {}
+  constructor(summary = "") {
+    this.summary = summary;
+  }
 }
 exports.Category = Category;
 
@@ -28,7 +41,8 @@ class Item
   summary = "";
   description = "";
   done = false;
-  category;
+  category = null;
+  itemType = null;
   constructor() {}
 };
 exports.Item = Item;
@@ -37,7 +51,9 @@ dboo.class(Item,
   [{"summary": dboo.string},
    {"description": dboo.string},
    {"category": Category},
-   {"done": dboo.bool}]
+   {"done": dboo.bool},
+    {"itemType": ItemType}
+   ]
 );
 
 function createItems(summary, description, category, fn)
@@ -50,6 +66,7 @@ function createItems(summary, description, category, fn)
         i.summary = line;
         i.description = "";
         i.category = category;
+        i.itemType = null;
         items.push(i);
       }
       fn(items);
