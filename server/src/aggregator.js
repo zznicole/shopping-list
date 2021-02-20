@@ -72,7 +72,7 @@ function init(odb) {
 }
 
 function findCategory(odb, text) {
-  let words = text.split(/\s/);
+  let words = text.toLowerCase().split(/\s/);
   console.log("findCategory 1: " + words);
   
   let dwords = [];

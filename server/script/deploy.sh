@@ -146,6 +146,7 @@ rsync -var -e "ssh -i \"${keys_file}\"" \
   server/package.json \
   server/ShoppingList API.rst \
   server/script \
+  server/data \
   server/server.js \
   server/src \
     ubuntu@13.53.58.58:${server_install_dir}/server
