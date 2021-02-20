@@ -5,16 +5,17 @@ export default function TobuyList({ tobuys, checkTobuy, deleteTobuy, editTobuy }
   return (
     <div>
       {tobuys.map((tobuy) => (
-        <TobuyItem
+          <TobuyItem
           key={tobuy.itemid}
           title={tobuy.title}
           subtitle={tobuy.subtitle}
+          itemType={tobuy.itemType}
           checkTobuy={checkTobuy}
           id={tobuy.itemid}
           isCompleted={tobuy.isCompleted}
           deleteTobuy={deleteTobuy}
           editTobuy={editTobuy}
-        />
+          />
       ))}
     </div>
   );

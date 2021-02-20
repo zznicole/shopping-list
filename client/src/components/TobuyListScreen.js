@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
 import EdiText from 'react-editext';
-import { Home, Share } from '@material-ui/icons'
+import { Home, Share, Category, FormatListBulleted } from '@material-ui/icons'
 import axios from "axios";
 import Box from '@material-ui/core/Box';
 
@@ -46,13 +46,17 @@ let fetchingList = false;
 
 export default function TobuyListScreen() {
   const classes = useStyles();
-  const [list, setList] = useState({summary: "",items:[], isOwn: false, isShared:false, shareCount:0, owner:""});
+  const [list, setList] = useState({summary: "",items:[], isOwn: false, isShared:false, shareCount:0, owner:"", aggregated:false});
   const { listid } = useParams();
   const history = useHistory();
   
   function fetchList() {
+    let url = apiBaseUrl + "getlist?listid=" + listid;
+    if (list.aggregated) {
+      url = apiBaseUrl + "aggregatedlist?listid=" + listid
+    }
     axios
-      .get(apiBaseUrl + "getlist?listid=" + listid)
+      .get(url)
       .then(function (response) {
         try {
           fetchingList = true;
@@ -176,9 +180,21 @@ export default function TobuyListScreen() {
   const goToShare = () => {
     history.push('/share/'+listid);
   }
-  
+  const switchToAggregated = () => {
+    list.aggregated = true;
+    // setList({...list, ["aggregated"]: true})
+    fetchList();
+  }
+  const switchToList = () => {
+    list.aggregated = false;
+    // setList({...list, ["aggregated"]: false})
+    fetchList();
+  }
   function screenName(user) {
-    return user.screenName && user.screenName.length > 0 ? user.screenName : user.userId;
+    if (user.screenName && user.screenName.length > 0) {
+      return user.screenName + " (" + user.userId + ")";
+    }
+    return user.userId;
   }
   function usersAsString(users) {
     let usersStr = "";
@@ -192,6 +208,17 @@ export default function TobuyListScreen() {
     }
   
     return usersStr;
+  }
+  function Aggregator() {
+    if (list.aggregated) {
+      return <><IconButton edge="end"  color="inherit" className={classes.shareButton}>
+            <FormatListBulleted onClick={switchToList} />
+      </IconButton></>;
+    } else {
+      return <><IconButton edge="end"  color="inherit" className={classes.shareButton}>
+            <Category onClick={switchToAggregated} />
+      </IconButton></>;
+    }
   }
   function Sharing() {
     if (list.isOwn) {
@@ -247,6 +274,7 @@ export default function TobuyListScreen() {
               <Home />
             </IconButton>
           </Link>
+          <Aggregator />
           <Sharing />
         </Toolbar>
       </AppBar>
