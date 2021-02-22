@@ -1,12 +1,12 @@
 import React from 'react';
 import TobuyItem from './TobuyItem';
 
-export default function TobuyList({ tobuys, checkTobuy, deleteTobuy, editTobuy }) {
+export default function TobuyList({ tobuys, checkTobuy, deleteTobuy, editTobuy, keyPrefix}) {
   return (
     <div>
       {tobuys.map((tobuy) => (
           <TobuyItem
-          key={tobuy.itemid}
+          key={keyPrefix+tobuy.itemid}
           title={tobuy.title}
           subtitle={tobuy.subtitle}
           itemType={tobuy.itemType}

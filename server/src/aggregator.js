@@ -31,6 +31,12 @@ class Word extends lists.ItemType {
       }
     }
   }
+  title(langIx)  {
+    if (langIx < this.translations.length) {
+        return this.translations[langIx];
+    }
+    return this.translations[0];
+  }
 };
 
 dboo.class(Word, lists.ItemType, [
@@ -69,6 +75,19 @@ function init(odb) {
     cfg.categoryUnknown = new WordCategory("Other");
     odb.commit(cfg);
   }
+}
+
+function languageIx(language) {
+  // Just use first part of locale string (i.e. en of en_GB)
+  language = language.split(/-_:;,.\\s/)[0];
+  let langIx = 0;
+  if (cfg) {
+    langIx = cfg.languages.indexOf(language);
+    if (langIx == -1) {
+      langIx = 0;
+    }
+  }
+  return langIx;
 }
 
 function findCategory(odb, text) {
@@ -197,3 +216,4 @@ exports.WordCategory=WordCategory
 exports.mapAllItems=mapAllItems
 exports.init=init
 exports.initData=initData
+exports.languageIx=languageIx

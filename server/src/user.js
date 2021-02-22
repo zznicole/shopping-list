@@ -19,6 +19,7 @@ class User {
   lastName = "";
   permissions = [];
   lists = [];
+  preferred_locale = "";
   
   constructor() {
     this.userId = null;
@@ -27,6 +28,7 @@ class User {
     this.lastName = "";
     this.permissions = [];
     this.lists = [];
+    this.preferred_locale = "";
   }
   
   isAdmin() {
@@ -42,7 +44,9 @@ dboo.class(User,
    {"firstName": dboo.string},
    {"lastName": dboo.string},
    {"permissions": dboo.array(dboo.string)},
-   {"lists": dboo.array(lists.ShoppingList)}]
+   {"lists": dboo.array(lists.ShoppingList)},
+   {"preferred_locale": dboo.string},
+  ]
 );
 
 

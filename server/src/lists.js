@@ -20,6 +20,16 @@ class Category
   constructor(summary = "") {
     this.summary = summary;
   }
+  title(langIx)  {
+    if (this.summary[0] == '[' && this.summary.slice(-1) == ']') {
+      let titles = this.summary.slice(1,-1).split('/');
+      if (langIx < titles.length) {
+          return titles[langIx];
+      }
+      return titles[0];
+    }
+    return this.summary;
+  }
 }
 exports.Category = Category;
 
@@ -52,8 +62,8 @@ dboo.class(Item,
    {"description": dboo.string},
    {"category": Category},
    {"done": dboo.bool},
-    {"itemType": ItemType}
-   ]
+   {"itemType": ItemType}
+  ]
 );
 
 function createItems(summary, description, category, fn)

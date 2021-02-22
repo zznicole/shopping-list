@@ -98,7 +98,6 @@ app.get('/logout', async function(req, res) {
 });
 
 app.post('/login', async function(req, res) {
-  console.log(req.body);
   let s = session.handleSession(req, res);
   let userid = req.body.userid ? req.body.userid : "";
   let password = req.body.password ? req.body.password : "";
@@ -123,7 +122,6 @@ app.post('/login', async function(req, res) {
 });
 
 app.post('/signup', async function(req, res) {
-  console.log(req.body);
   let s = session.handleSession(req, res);
   let response = user.createUser(req.body.userid,
                   req.body.email,
@@ -270,11 +268,26 @@ app.get('/aggregatedlist', async function(req, res) {
   console.log('/aggregatedlist');
   s = session.handleSession(req, res);
   if (s.user) {
+    // get from query string (from client's browser setting)
+    let userLocale = req.query.locale;
+    console.log("User locale: " + userLocale);
+    // if user has some preferences for this app, use that instead
+    if (s.user.preferred_locale && s.user.preferred_locale.length > 0) {
+      userLocale = s.user.preferred_locale;
+    }
+    // figure out language index form user's locale
+    let langIx = 0;
+    if (userLocale && userLocale > 0) {
+      langIx = aggregator.languageIx(s.user.preferred_locale);
+    }
+    
     let list = odb.object(req.query.listid);
+    // Classify all items to category
     aggregator.mapAllItems(odb, list);
     
     let items = new Map();
-    
+    // Create a map of lists. The map's key is category 
+    // and the mapped list will contain all items for that category 
     for (let item of list.items) {
       let category = item.category;
       if (!category)  {
@@ -287,6 +300,7 @@ app.get('/aggregatedlist', async function(req, res) {
       console.log(category.summary + ": " + item.summary);
     }
     
+    // Build a list with all categories and items
     let aggregatedList = [];
     for (let category of items.keys()) {
       if (!category) {
@@ -295,32 +309,36 @@ app.get('/aggregatedlist', async function(req, res) {
       subtitle = "";//category.description;
       aggregatedList.push({
         itemid: odb.objectid(category),
-        title: category.summary,
+        title: category.title(langIx),
         subtitle: subtitle,
         itemType: "header",
         isCompleted: false
       });
-      
+      // Sort items based on locale... (TODO: currently based on english as it is index 0)
       let subList = items.get(category);
       subList.sort(function (a,b){
         if (a.itemType && b.itemType) {
-          let strA = a.itemType.translations[0].toString();
-          let strB = b.itemType.translations[0].toString();
+          let strA = a.itemType.title(langIx);
+          let strB = b.itemType.title(langIx);
           return strA.localeCompare(strB);
         }
         return a.summary.localeCompare(b.summary);
       });
       for (let item of subList) {
-        let subtitle = "";
+        // subtitle here gets some debugging info. (the english name + assigned category)
+        let itemtitle = item.summary;
+        let subtitle = item.summary;
         if (item.itemType) {
-          subtitle += item.itemType.translations[0];
+          itemtitle = item.itemType.title(langIx);
+          console.log("item.itemType: " + itemtitle);
         }
         if (item.category) {
           subtitle += " [" + item.category.summary + "]";
         }
+        
         aggregatedList.push({
           itemid: odb.objectid(item),
-          title: item.summary,
+          title: itemtitle,
           subtitle: subtitle,
           itemType: "normal",
           isCompleted: item.done
@@ -328,6 +346,7 @@ app.get('/aggregatedlist', async function(req, res) {
       }
     }
     let listIsOwn = s.user.userId === list.owner;
+    console.log(aggregatedList);
     results = {
       listid: req.query.listid,
       summary: list.summary,
@@ -338,7 +357,8 @@ app.get('/aggregatedlist', async function(req, res) {
       shareCount: list.users.length,
       sharedWith: listIsOwn ? list.users : [],
       items: aggregatedList,
-      aggregated: true};
+      aggregated: true
+    };
     res.json({code: 200, result: results});
   } else {
     res.status(401);

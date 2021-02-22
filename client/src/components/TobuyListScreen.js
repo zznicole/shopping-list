@@ -53,7 +53,7 @@ export default function TobuyListScreen() {
   function fetchList() {
     let url = apiBaseUrl + "getlist?listid=" + listid;
     if (list.aggregated) {
-      url = apiBaseUrl + "aggregatedlist?listid=" + listid
+      url = apiBaseUrl + "aggregatedlist?listid=" + listid;
     }
     axios
       .get(url)
@@ -98,13 +98,10 @@ export default function TobuyListScreen() {
       });
   }
 
-// give a name to the list
   function onSave(val) {
-    console.log('Edited Value ->', val);
     editList(val);
   }
 
-// add a tobuy item to the list
   function addTobuy(text) {
     axios
       .post(apiBaseUrl + "newitem", {listid: listid, summary: text, description: ""})
@@ -120,7 +117,6 @@ export default function TobuyListScreen() {
   }
   
   function deleteTobuy(id) {
-    console.log(id);
     axios
       .post(apiBaseUrl + "rmitem", {listid: listid, itemid: id})
       .then(function (response) {
@@ -135,7 +131,6 @@ export default function TobuyListScreen() {
   }
   
   function checkTobuy(id) {
-    console.log(id);
     for (let i = 0; i < list.items.length; ++i) {
       let tobuy = list.items[i];
       if (tobuy.itemid === id) {
@@ -156,7 +151,6 @@ export default function TobuyListScreen() {
   }
 
   function editTobuy(id, newTitle) {
-    console.log(id);
     for (let i = 0; i < list.items.length; ++i) {
       let tobuy = list.items[i];
       if (tobuy.itemid === id) {
@@ -176,18 +170,15 @@ export default function TobuyListScreen() {
     }
   }
 
-// share the list
   const goToShare = () => {
     history.push('/share/'+listid);
   }
   const switchToAggregated = () => {
     list.aggregated = true;
-    // setList({...list, ["aggregated"]: true})
     fetchList();
   }
   const switchToList = () => {
     list.aggregated = false;
-    // setList({...list, ["aggregated"]: false})
     fetchList();
   }
   function screenName(user) {
@@ -263,6 +254,7 @@ export default function TobuyListScreen() {
         checkTobuy={checkTobuy}
         deleteTobuy={deleteTobuy}
         editTobuy={editTobuy}
+        keyPrefix={list.aggregated?"a":"s"}
       />
       <br />
       <br />
@@ -281,3 +273,4 @@ export default function TobuyListScreen() {
     </div>
   );
 }
+
