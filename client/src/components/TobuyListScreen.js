@@ -218,10 +218,10 @@ export default function TobuyListScreen() {
           <Share onClick={goToShare} />
         </IconButton>
           <Box ml={1.5}>
-            <Typography variant={'subtitle'}>
-              Sharing with:
-            </Typography>
             <Typography variant={'subtitle2'}>
+              Shared with:
+            </Typography>
+            <Typography variant={'subtitle2'} component={'small'}>
               {usersAsString(list.sharedWith)}.
             </Typography>
           </Box></>;

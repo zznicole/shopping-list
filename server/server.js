@@ -329,11 +329,11 @@ app.get('/aggregatedlist', async function(req, res) {
         let itemtitle = item.summary;
         let subtitle = item.summary;
         if (item.itemType) {
-          itemtitle = item.itemType.title(langIx);
+          subtitle = item.itemType.title(langIx);
           console.log("item.itemType: " + itemtitle);
         }
         if (item.category) {
-          subtitle += " [" + item.category.summary + "]";
+          subtitle += " " + item.category.summary;
         }
         
         aggregatedList.push({

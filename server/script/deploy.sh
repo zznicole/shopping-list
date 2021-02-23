@@ -141,6 +141,7 @@ rsync -var -e "ssh -i \"${keys_file}\"" client/build/*  ubuntu@13.53.58.58:${ser
 echo "copy client web pack to server...done"
 echo "copy server code to server..."
 rsync -var -e "ssh -i \"${keys_file}\"" \
+  --exclude node_modules \
   server/README.md \
   server/package-lock.json \
   server/package.json \
