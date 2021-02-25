@@ -176,11 +176,13 @@ else
   create_db=true
 fi
 
-if [ "${make_db_backup}" = true ] ; then
-  echo "making backup of database..."
-  ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/backup.js ${server_backup_dir}"
-  echo "making backup of database...done"
-fi
+#if [ "${make_db_backup}" = true ] ; then
+#  echo "making backup of database..."
+#  ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/backup.js ${server_backup_dir}"
+#  ssh -i "${keys_file}" ${server_user}@${server_address} \
+#    "cd ${server_install_dir}/server/; /opt/dboo/dboo-0.9.5/bin/dboo ${dbname} -u=${dbuser} -p=${dbpwd} --host=${host} --port=${port} -- backup --directory=${server_backup_dir}"
+#  echo "making backup of database...done"
+#fi
 
 if [ "${create_db}" = true ] ; then
   ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server/; NODE_ENV=${environment} node ./script/create_database.js"

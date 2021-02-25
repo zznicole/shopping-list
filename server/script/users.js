@@ -1,11 +1,60 @@
 const dboo = require('dboo');
 const config = require('config');
 const user = require('../src/user.js');
+const userid = require('../src/userid.js');
+const fs = require('fs');
+const readline = require('readline');
 
 dbConfig = config.get('dbConfig');
 
+dboo.init();
 const odb = new dboo.ODB();
+console.log(dbConfig);
 odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
+
+
+function backupUsers()
+{
+  let uids = [];
+  odb.query(uids, "select<UserId>()");
+  for (const uid of uids) {
+    let str = `{"dboo::objectid" : "${odb.objectid(uid)}", "dboo::class" : "UserId", "userId" : "${uid.userId}", "screenName" : "${uid.screenName}"}`;
+    console.log(str);
+    fs.appendFileSync('userid.js', str + '\n');
+  }
+  let upwds = [];
+  odb.query(upwds, "select<UserPassword>()");
+  for (const upwd of upwds) {
+    let str = `{"dboo::objectid" : "${odb.objectid(upwd)}", "dboo::class" : "UserPassword", "userId" : "${odb.objectid(upwd.userId)}", "passwordHash" : "${upwd.passwordHash}", "salt" : "${upwd.salt}", "iterations" : ${upwd.iterations}}`;
+    console.log(str);
+    fs.appendFileSync('userpwd.js', str + '\n');
+  }
+  let users = [];
+  odb.query(users, "select<User>()");
+  for (const usr of users) {    
+    let str = `{"dboo::objectid" : "${odb.objectid(usr)}", "dboo::class" : "User", "userId" : "${odb.objectid(usr.userId)}", "emailAddress" : "${usr.emailAddress}", "firstName" : "${usr.firstName}", "lastName" : "${usr.lastName}", "permissions" : [], "lists" : [], "preferred_locale" : ""}`
+    console.log(str);
+    fs.appendFileSync('users.js', str + '\n');
+  }
+}
+
+function restoreUsers()
+{
+  let lineReader = readline.createInterface({input: fs.createReadStream('userid.js')});
+  lineReader.on('line', function (line) {
+    console.log('Line from file:', line);
+  });  
+
+  lineReader = readline.createInterface({input: fs.createReadStream('userpwd.js')});
+  lineReader.on('line', function (line) {
+    console.log('Line from file:', line);
+  });  
+  
+  lineReader = readline.createInterface({input: fs.createReadStream('users.js')});
+  lineReader.on('line', function (line) {
+    console.log('Line from file:', line);
+  });  
+}
 
 function makeUserAdmin(userId)
 {
@@ -30,4 +79,12 @@ function makeUserAdmin(userId)
 
 if ((process.argv.length == 4) && process.argv[2] == "makeAdmin") {
   makeUserAdmin (process.argv[3]);
+}
+
+if ((process.argv.length == 3) && process.argv[2] == "backup") {
+  backupUsers ();
+}
+
+if ((process.argv.length == 3) && process.argv[2] == "restore") {
+  reestoreUsers ();
 }
