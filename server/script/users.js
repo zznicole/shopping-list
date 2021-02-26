@@ -13,8 +13,7 @@ console.log(dbConfig);
 odb.connect(dbConfig.host, dbConfig.port, dbConfig.dbName, dbConfig.webUserName, dbConfig.webUserPwd);
 
 
-function backupUsers()
-{
+function backupUsers() {
   let uids = [];
   odb.query(uids, "select<UserId>()");
   for (const uid of uids) {
@@ -31,58 +30,108 @@ function backupUsers()
   }
   let users = [];
   odb.query(users, "select<User>()");
-  for (const usr of users) {    
+  for (const usr of users) {
     let str = `{"dboo::objectid" : "${odb.objectid(usr)}", "dboo::class" : "User", "userId" : "${odb.objectid(usr.userId)}", "emailAddress" : "${usr.emailAddress}", "firstName" : "${usr.firstName}", "lastName" : "${usr.lastName}", "permissions" : [], "lists" : [], "preferred_locale" : ""}`
     console.log(str);
     fs.appendFileSync('users.json', str + '\n');
   }
 }
 
+let classes = new Map([
+  ['UserId', userid.UserId],
+  ['UserPassword', user.UserPassword],
+  ['User', user.User]
+]);
 
-function restoreUsers()
-{
-  let objects = new Map();
-  let objectArray = [];
-  
-  let lineReader = readline.createInterface({input: fs.createReadStream('userid.json')});
-  lineReader.on('line', function (line) {
-    let o = JSON.parse(line);
-    let no = new userid.UserId();
-    Object.assign(no, restored);
-    odb.setid(no, no['dboo::objectid']);
-    objects.set(no['dboo::objectid'], no);
-    objectArray.append(no);
-  });  
-
-  lineReader = readline.createInterface({input: fs.createReadStream('userpwd.json')});
-  lineReader.on('line', function (line) {
-    console.log('Line from file:', line);
-    let o = JSON.parse(line);
-    let no = new user.UserPassword();
-    Object.assign(no, restored);
-    odb.setid(no, no['dboo::objectid']);
-    objects.set(no['dboo::objectid'], no);
-    no['userId'] = objects.get(no['userId']);
-    objectArray.append(no);
-  });  
-  
-  lineReader = readline.createInterface({input: fs.createReadStream('users.json')});
-  lineReader.on('line', function (line) {
-    console.log('Line from file:', line);
-    let o = JSON.parse(line);
-    let no = new user.User();
-    Object.assign(no, restored);
-    odb.setid(no, no['dboo::objectid']);
-    objects.set(no['dboo::objectid'], no);
-    no['userId'] = objects.get(no['userId']);
-    objectArray.append(no);
-  });
-  
-  odb.commit(objectArray);
+function constructObject(className) {
+  let cls = classes.get(className);
+  return new(cls);
 }
 
-function makeUserAdmin(userId)
-{
+function readObject(line) {
+  let restored = JSON.parse(line);
+  let clsid = restored['dboo::class'];
+  let id = restored['dboo::objectid'];
+  let no = constructObject(clsid);
+
+  Object.assign(no, restored);
+  odb.setid(no, id);
+  console.log(`${clsid} ${id}: `);
+  console.log(no);
+  return [id, no];
+}
+
+function resolvePointers(objectMap, object) {
+  for (let key in object) {
+    if (key != 'dboo::objectid') {
+      let value = object[key];
+      if (typeof value == 'string' && value.length == 16) {
+        let id = value;
+        // potential object id
+        if (objectMap.has(id)) {
+          console.log(`resolved ${key}, id ${id}`);
+          object[key] = objectMap.get(id);
+        }
+      } else if (value instanceof Array) {
+        let arr = value;
+        for (let i = 0; i < arr.length; ++i) {
+          let value = arr[i];
+          if (typeof value == 'string' && value.length == 16) {
+            let id = value;
+            // potential object id
+            if (objectMap.has(id)) {
+              console.log(`resolved ${key}[${i}], id ${id}`);
+              arr[i] = objectMap.get(id);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function restoreUsers() {
+  const start = async() => {
+    let objectMap = new Map();
+    let objectArray = [];
+
+    let lineReader = readline.createInterface({
+      input: fs.createReadStream('userid.json')
+    });
+    for await (const line of lineReader) {
+      let obj = readObject(line);
+      objectMap.set(obj[0], obj[1]);
+      objectArray.push(obj[1]);
+    }
+
+    lineReader = readline.createInterface({
+      input: fs.createReadStream('userpwd.json')
+    });
+    for await (const line of lineReader) {
+      let obj = readObject(line);
+      objectMap.set(obj[0], obj[1]);
+      objectArray.push(obj[1]);
+    }
+
+    lineReader = readline.createInterface({
+      input: fs.createReadStream('users.json')
+    });
+    for await (const line of lineReader) {
+      let obj = readObject(line);
+      objectMap.set(obj[0], obj[1]);
+      objectArray.push(obj[1]);
+    }
+
+    for (let obj of objectArray) {
+      resolvePointers(objectMap, obj);
+      console.log(obj);
+    }
+    odb.commit(objectArray);
+  }
+  start();
+}
+
+function makeUserAdmin(userId) {
   let users = [];
   odb.query(users, "select<User>(eq(userId,\"" + dboo.escape_string(userId) + "\"))")
   if (users.length == 1) {
@@ -103,13 +152,13 @@ function makeUserAdmin(userId)
 
 
 if ((process.argv.length == 4) && process.argv[2] == "makeAdmin") {
-  makeUserAdmin (process.argv[3]);
+  makeUserAdmin(process.argv[3]);
 }
 
 if ((process.argv.length == 3) && process.argv[2] == "backup") {
-  backupUsers ();
+  backupUsers();
 }
 
 if ((process.argv.length == 3) && process.argv[2] == "restore") {
-  reestoreUsers ();
+  restoreUsers();
 }
