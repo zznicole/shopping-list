@@ -20,40 +20,65 @@ function backupUsers()
   for (const uid of uids) {
     let str = `{"dboo::objectid" : "${odb.objectid(uid)}", "dboo::class" : "UserId", "userId" : "${uid.userId}", "screenName" : "${uid.screenName}"}`;
     console.log(str);
-    fs.appendFileSync('userid.js', str + '\n');
+    fs.appendFileSync('userid.json', str + '\n');
   }
   let upwds = [];
   odb.query(upwds, "select<UserPassword>()");
   for (const upwd of upwds) {
     let str = `{"dboo::objectid" : "${odb.objectid(upwd)}", "dboo::class" : "UserPassword", "userId" : "${odb.objectid(upwd.userId)}", "passwordHash" : "${upwd.passwordHash}", "salt" : "${upwd.salt}", "iterations" : ${upwd.iterations}}`;
     console.log(str);
-    fs.appendFileSync('userpwd.js', str + '\n');
+    fs.appendFileSync('userpwd.json', str + '\n');
   }
   let users = [];
   odb.query(users, "select<User>()");
   for (const usr of users) {    
     let str = `{"dboo::objectid" : "${odb.objectid(usr)}", "dboo::class" : "User", "userId" : "${odb.objectid(usr.userId)}", "emailAddress" : "${usr.emailAddress}", "firstName" : "${usr.firstName}", "lastName" : "${usr.lastName}", "permissions" : [], "lists" : [], "preferred_locale" : ""}`
     console.log(str);
-    fs.appendFileSync('users.js', str + '\n');
+    fs.appendFileSync('users.json', str + '\n');
   }
 }
 
+
 function restoreUsers()
 {
-  let lineReader = readline.createInterface({input: fs.createReadStream('userid.js')});
+  let objects = new Map();
+  let objectArray = [];
+  
+  let lineReader = readline.createInterface({input: fs.createReadStream('userid.json')});
   lineReader.on('line', function (line) {
-    console.log('Line from file:', line);
+    let o = JSON.parse(line);
+    let no = new userid.UserId();
+    Object.assign(no, restored);
+    odb.setid(no, no['dboo::objectid']);
+    objects.set(no['dboo::objectid'], no);
+    objectArray.append(no);
   });  
 
-  lineReader = readline.createInterface({input: fs.createReadStream('userpwd.js')});
+  lineReader = readline.createInterface({input: fs.createReadStream('userpwd.json')});
   lineReader.on('line', function (line) {
     console.log('Line from file:', line);
+    let o = JSON.parse(line);
+    let no = new user.UserPassword();
+    Object.assign(no, restored);
+    odb.setid(no, no['dboo::objectid']);
+    objects.set(no['dboo::objectid'], no);
+    no['userId'] = objects.get(no['userId']);
+    objectArray.append(no);
   });  
   
-  lineReader = readline.createInterface({input: fs.createReadStream('users.js')});
+  lineReader = readline.createInterface({input: fs.createReadStream('users.json')});
   lineReader.on('line', function (line) {
     console.log('Line from file:', line);
-  });  
+    let o = JSON.parse(line);
+    let no = new user.User();
+    Object.assign(no, restored);
+    odb.setid(no, no['dboo::objectid']);
+    objects.set(no['dboo::objectid'], no);
+    no['userId'] = objects.get(no['userId']);
+    objectArray.append(no);
+  });
+  
+  odb.commit(objectArray);
 }
 
 function makeUserAdmin(userId)
