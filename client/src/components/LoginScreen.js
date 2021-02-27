@@ -149,9 +149,6 @@ export default function LoginScreen(props) {
               className={classes.forgotPasswoodBtn}
               to="/passswordresetrequest"
               color="primary"
-              onClick={() => {
-                console.info("I'm a button.");
-              }}
             >
               Forgot Your Password?
             </Link>

@@ -10,6 +10,7 @@ import ListsScreen from './components/ListsScreen';
 import TobuyListScreen from './components/TobuyListScreen';
 import ShareScreen from './components/ShareScreen';
 import PwResetRequestScreen from "./components/PwResetRequestScreen";
+import PwResetScreen from "./components/PwResetScreen";
 
 // import injectTapEventPlugin from "react-tap-event-plugin";
 

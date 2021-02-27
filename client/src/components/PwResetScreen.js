@@ -66,14 +66,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PwResetScreen(props) {
   const classes = useStyles();
-  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const history = useHistory();
   const apiBaseUrl = "/";
 
   const onClickHandler = (event) => {
     let payload = {
-      userid: email,
-      email: email,
+      password: password,
+      confirm_password: password,
     };
     axios
       .post(apiBaseUrl + "passwordreset", payload)
