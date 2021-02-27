@@ -166,12 +166,6 @@ export default function LoginScreen(props) {
               Sign Up
             </Button>
             <br />
-            <FormControlLabel control={<Checkbox
-              checked={keepLoggedIn}
-              onChange={(e) => setKeepLoggedIn()} />}
-              label="Keep me logged in."
-            />
-            <br />
             <p>Already signed up? Let's log in now!</p>
             <Link to="/" style={{textDecoration:'none'}}>
               <Button
