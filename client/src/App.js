@@ -37,7 +37,7 @@ class App extends Component {
           <Route path="/list/:listid" component={TobuyListScreen} isPrivate/>
           <Route path="/share/:listid" component={ShareScreen} isPrivate/>
           <Route path="/verify/:status" component={VerifyScreen} isPrivate/>
-
+          
           <Route component={LoginScreen} />
         </Switch>
       </BrowserRouter>

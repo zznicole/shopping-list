@@ -67,35 +67,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignupScreen(props) {
+export default function PwResetRequestScreen(props) {
   const classes = useStyles();
-  const [firstName, setFirstname] = useState("");
-  const [lastName, setLastname] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const history = useHistory();
-
   const apiBaseUrl = "/";
-
 
   const onClickHandler = (event) => {
     let payload = {
       userid: email,
-      first_name: firstName,
-      last_name: lastName,
       email: email,
-      password: password,
     };
     axios
-      .post(apiBaseUrl + "signup", payload)
+      .post(apiBaseUrl + "passwordresetrequest", payload)
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {
-          console.log("sign up successful");
+          console.log("Send password reset request successful");
           history.push("/lists");
         } else if (response.status === 401) {
-          console.log("Error signing up");
-          alert("Error signing up");
+          console.log("Error sending");
+          alert("Error sending request");
           history.push("/");
         }
       })
@@ -109,29 +101,9 @@ export default function SignupScreen(props) {
       <Container className={classes.formContainer}>
         <form className={classes.form}>
           <FontAwesomeIcon className={classes.pinIcon} icon={faThumbtack} color="red" transform={{ rotate: 42 }}/>
-          <h1 className={classes.heading}>Our Shopping List</h1>
+          <h1 className={classes.heading}>Forgot Your password?</h1>
+          <h3>Don't worry, just fill in your Email, send the password reset request to us, we'll send to the link to reset your password.</h3>
           <FormControl>
-            <TextField
-              type="First Name"
-              required
-              autoComplete="off"
-              variant="standard"
-              size="medium"
-              label="First Name"
-              floatingLabelText="First Name"
-              onChange={(e) => setFirstname(e.target.value)}
-            />
-            <br />
-            <TextField
-              type="Last Name"
-              required
-              autoComplete="off"
-              variant="standard"
-              size="medium"
-              label="Last Name"
-              floatingLabelText="Last Name"
-              onChange={(e) => setLastname(e.target.value)}
-            />
             <br />
             <TextField
               type="Email"
@@ -144,18 +116,6 @@ export default function SignupScreen(props) {
               onChange={(e) => setEmail(e.target.value)}
             />
             <br />
-            <TextField
-              type="password"
-              required
-              autoComplete="off"
-              variant="standard"
-              size="medium"
-              label="Password"
-              floatingLabelText="Password"
-              onChange={(e) => setPassword(e.target.value)}
-              backgroundColor="#FCF6B1"
-            />
-            <br />
             <Button
               className={classes.loginBtn}
               variant="contained"
@@ -165,16 +125,6 @@ export default function SignupScreen(props) {
               Sign Up
             </Button>
             <br />
-            <p>Already signed up? Let's log in now!</p>
-            <Link to="/" style={{textDecoration:'none'}}>
-              <Button
-                className={classes.signupBtn}
-                variant="outlined"
-                color="secondary"
-              >
-                Log In
-              </Button>
-            </Link>
           </FormControl>
         </form>
       </Container>
