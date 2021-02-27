@@ -8,11 +8,11 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
+import { LinkedIn } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   screen: {
@@ -60,11 +60,13 @@ const useStyles = makeStyles((theme) => ({
 
   loginBtn: {
     width: "100%",
-   
   },
 
   signupBtn: {
     width: "100%",
+  },
+  forgotPasswoodBtn: {
+    fontSize: "8",
   },
 }));
 
@@ -76,8 +78,11 @@ export default function LoginScreen(props) {
   const history = useHistory();
 
   const apiBaseUrl = "/";
-  
-  let loggedIn = document.cookie.replace(/(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+  let loggedIn = document.cookie.replace(
+    /(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/,
+    "$1",
+  );
   if (loggedIn) {
     history.push("/lists");
   }
@@ -110,7 +115,12 @@ export default function LoginScreen(props) {
     <div className={classes.screen}>
       <Container className={classes.formContainer}>
         <form className={classes.form}>
-          <FontAwesomeIcon className={classes.pinIcon} icon={faThumbtack} color="red"  transform={{ rotate: 42 }} />
+          <FontAwesomeIcon
+            className={classes.pinIcon}
+            icon={faThumbtack}
+            color="red"
+            transform={{ rotate: 42 }}
+          />
           <h1 className={classes.heading}>Our Shopping List</h1>
           <FormControl>
             <TextField
@@ -135,6 +145,16 @@ export default function LoginScreen(props) {
               onChange={(e) => setPassword(e.target.value)}
               backgroundColor="#FCF6B1"
             />
+            <Link
+              className={classes.forgotPasswoodBtn}
+              href="#text-buttons"
+              color="primary"
+              onClick={() => {
+                console.info("I'm a button.");
+              }}
+            >
+              Forgot Your Password?
+            </Link>
             <br />
             <Button
               className={classes.loginBtn}
@@ -145,14 +165,20 @@ export default function LoginScreen(props) {
               LOG IN
             </Button>
             <br />
-            <FormControlLabel control={<Checkbox
-              checked={keepLoggedIn}
-              onChange={(event, newValue) => setKeepLoggedIn({ keepLoggedIn: !keepLoggedIn})} />}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={keepLoggedIn}
+                  onChange={(event, newValue) =>
+                    setKeepLoggedIn({ keepLoggedIn: !keepLoggedIn })
+                  }
+                />
+              }
               label="Keep me logged in."
             />
             <br />
             <p>Not signed up yet? Sign up now!</p>
-            <Link to="/signup" style={{textDecoration:'none'}}>
+            <Link to="/signup" style={{ textDecoration: "none" }}>
               <Button
                 className={classes.signupBtn}
                 variant="contained"
