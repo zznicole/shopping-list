@@ -76,16 +76,16 @@ export default function PwResetRequestScreen(props) {
       email: email,
     };
     axios
-      .post(apiBaseUrl + "passwordresetrequest", payload)
+      .post(apiBaseUrl + "passwordreset", payload)
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {
-          console.log("Send password reset request successful");
-          history.push("/passwordreset");
-        } else if (response.status === 401) {
-          console.log("Error sending");
-          alert("Error sending request");
+          console.log("Reset password successful");
           history.push("/");
+        } else if (response.status === 401) {
+          console.log("Error resetting password");
+          alert("Error resetting password");
+          history.push("/passwordreset:request");
         }
       })
       .catch(function (error) {
@@ -98,20 +98,31 @@ export default function PwResetRequestScreen(props) {
       <Container className={classes.formContainer}>
         <form className={classes.form}>
           <FontAwesomeIcon className={classes.pinIcon} icon={faThumbtack} color="red" transform={{ rotate: 42 }}/>
-          <h1 className={classes.heading}>Forgot Your password?</h1>
-          <h3>Don't worry, just fill in your Email, click Request Password Reset, we'll send you a link to 
-            reset your password.</h3>
+          <h1 className={classes.heading}>Reset Your Password</h1>
           <FormControl>
-            <br />
+          <br />
             <TextField
-              type="Email"
+              type="password"
               required
               autoComplete="off"
               variant="standard"
               size="medium"
-              label="Email"
-              floatingLabelText="Email"
-              onChange={(e) => setEmail(e.target.value)}
+              label="New Password"
+              floatingLabelText="New Password"
+              onChange={(e) => setPassword(e.target.value)}
+              backgroundColor="#FCF6B1"
+            />
+            <br />
+            <TextField
+              type="password"
+              required
+              autoComplete="off"
+              variant="standard"
+              size="medium"
+              label="Confirm New Password"
+              floatingLabelText="Confirm New Password"
+              onChange={(e) => setPassword(e.target.value)}
+              backgroundColor="#FCF6B1"
             />
             <br />
             <Button
@@ -120,19 +131,9 @@ export default function PwResetRequestScreen(props) {
               color="secondary"
               onClick={onClickHandler}
             >
-              Request Password Reset
+              Reset Password
             </Button>
             <br />
-            <p>Not signed up yet? Sign up now!</p>
-            <Link to="/signup" style={{ textDecoration: "none" }}>
-              <Button
-                className={classes.signupBtn}
-                variant="contained"
-                color="secondary"
-              >
-                SIGN UP
-              </Button>
-            </Link>
           </FormControl>
         </form>
       </Container>
