@@ -6,9 +6,6 @@ import {
   Container,
   TextField,
   Button,
-  Checkbox,
-  FormControlLabel,
-  Icon,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -102,7 +99,8 @@ export default function PwResetRequestScreen(props) {
         <form className={classes.form}>
           <FontAwesomeIcon className={classes.pinIcon} icon={faThumbtack} color="red" transform={{ rotate: 42 }}/>
           <h1 className={classes.heading}>Forgot Your password?</h1>
-          <h3>Don't worry, just fill in your Email, send the password reset request to us, we'll send to the link to reset your password.</h3>
+          <h3>Don't worry, just fill in your Email, click Request Password Reset, we'll send you a link to 
+            reset your password.</h3>
           <FormControl>
             <br />
             <TextField
@@ -122,7 +120,7 @@ export default function PwResetRequestScreen(props) {
               color="secondary"
               onClick={onClickHandler}
             >
-              Sign Up
+              Request Password Reset
             </Button>
             <br />
             <p>Not signed up yet? Sign up now!</p>
