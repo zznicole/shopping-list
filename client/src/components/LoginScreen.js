@@ -147,7 +147,7 @@ export default function LoginScreen(props) {
             />
             <Link
               className={classes.forgotPasswoodBtn}
-              href="#text-buttons"
+              to="/passswordresetrequest"
               color="primary"
               onClick={() => {
                 console.info("I'm a button.");

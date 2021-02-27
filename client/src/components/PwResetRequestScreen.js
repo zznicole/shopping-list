@@ -125,6 +125,16 @@ export default function PwResetRequestScreen(props) {
               Sign Up
             </Button>
             <br />
+            <p>Not signed up yet? Sign up now!</p>
+            <Link to="/signup" style={{ textDecoration: "none" }}>
+              <Button
+                className={classes.signupBtn}
+                variant="contained"
+                color="secondary"
+              >
+                SIGN UP
+              </Button>
+            </Link>
           </FormControl>
         </form>
       </Container>

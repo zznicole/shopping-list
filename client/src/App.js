@@ -9,6 +9,7 @@ import VerifyScreen from "./VerifyScreen";
 import ListsScreen from './components/ListsScreen';
 import TobuyListScreen from './components/TobuyListScreen';
 import ShareScreen from './components/ShareScreen';
+import PwResetRequestScreen from "./components/PwResetRequestScreen";
 
 // import injectTapEventPlugin from "react-tap-event-plugin";
 
@@ -37,6 +38,7 @@ class App extends Component {
           <Route path="/list/:listid" component={TobuyListScreen} isPrivate/>
           <Route path="/share/:listid" component={ShareScreen} isPrivate/>
           <Route path="/verify/:status" component={VerifyScreen} isPrivate/>
+          <Route path="/passwordreset/:request" component={PwResetRequestScreen} isPrivate/>
           
           <Route component={LoginScreen} />
         </Switch>
