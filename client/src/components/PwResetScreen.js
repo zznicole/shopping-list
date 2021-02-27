@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PwResetRequestScreen(props) {
+export default function PwResetScreen(props) {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const history = useHistory();

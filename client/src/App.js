@@ -39,6 +39,7 @@ class App extends Component {
           <Route path="/share/:listid" component={ShareScreen} isPrivate/>
           <Route path="/verify/:status" component={VerifyScreen} isPrivate/>
           <Route path="/passwordreset/:request" component={PwResetRequestScreen} isPrivate/>
+          <Route path="/passwordreset" component={PwResetScreen} isPrivate/>
           
           <Route component={LoginScreen} />
         </Switch>
