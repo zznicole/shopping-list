@@ -1,2 +1,2 @@
 # shopping-list
-Ourshoppinglist is a Mobile-first Web application project, that is created by a team of two developers, Nicole Zheng and Tomas Andersson, using technologies including Javascript, ES6, React, DBOO database, Material UI, Arios.
+Ourshoppinglist is a Mobile-first Web application project. It was created by a team of two developers, Tomas Andersson and Nicole Zheng, using modern Javascript, ES6, React.js,Node.js DBOO database, Material UI, Arios......
