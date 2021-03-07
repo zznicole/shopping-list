@@ -112,10 +112,10 @@ function createUser(userName, email, first_name, last_name, password, odb)
   if (numberOfUnverifiedUsers < maxNumberOfUnverifiedUsers) {
     
     if (Object.keys(unverifiedUsers).includes(userName)) {
-      return {code: 409, message: "User id " + userName + " already taken! (1)"};
+      return {code: 409, message: "User id " + userName + " already registered, please check your email and click the verification link! (1)"};
     }
     if (odb.query("count<UserId>(eq(userId, \"" + dboo.escape_string(userName) + "\"))") > 0) {
-      return {code: 409, message: "User id " + userName + " already taken! (2)"};
+      return {code: 409, message: "User id " + userName + " already registered, please login! (2)"};
     }
     
     console.log("Create user: " + userName + ", " + email + ", " + first_name + ", " + last_name);
@@ -150,8 +150,8 @@ function verifyUser(userName, receivedVerificationCode, odb)
       return {message:"Verification failed", code: 401};
     }
   } else {
-    console.log("verifyUser: user '" + userId + "' not found, expired?");
-    return {message:"Unknown user: " + userId, code: 404};
+    console.log("verifyUser: user '" + userName + "' not found, expired?");
+    return {message:"Unknown user: " + userName, code: 404};
   }
   if (verified) {
     console.log("verifyUser:" + u.user.userId + ", " + u.user.emailAddress + ", " + u.user.mobileNumber);

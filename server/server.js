@@ -1,9 +1,13 @@
 console.log("Environment: " + process.env.NODE_ENV);
 
+const dboo = require('dboo');
+// check for debugging args on command line before any dboo things happen:
+// possible options: --log_object_ids, --log_rt_class_ids, --log_rt_serializer_ids
+dboo.argv(process.argv);
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
-const dboo = require('dboo');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -139,9 +143,9 @@ app.get('/verifyuser', async function(req, res) {
                   odb);
   // Redirect to screen with "successfully verified" message and a button to login screen
   if (response.code == 200) {
-    res.redirect(303, hostConfig.URL + "/verified/s");
+    res.redirect(303, hostConfig.URL + "/verify/success");
   } else {
-    res.redirect(303, hostConfig.URL + "/verified/f");
+    res.redirect(303, hostConfig.URL + "/verify/failure");
   }
 });
 

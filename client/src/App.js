@@ -5,7 +5,7 @@ import "./App.css";
 
 import LoginScreen from "./components/LoginScreen";
 import SignScreen from "./components/SignupScreen";
-import VerifyScreen from "./VerifyScreen";
+import VerifyScreen from "./components/VerifyScreen";
 import ListsScreen from './components/ListsScreen';
 import TobuyListScreen from './components/TobuyListScreen';
 import ShareScreen from './components/ShareScreen';

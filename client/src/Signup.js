@@ -5,6 +5,7 @@ import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import axios from "axios";
 import Login from "./Login";
+import {useHistory} from "react-router-dom";
 
 class Signup extends Component {
   constructor(props) {
@@ -19,7 +20,9 @@ class Signup extends Component {
 
   handleClick(event) {
     const apiBaseUrl = "/";
-    //    let apiBaseUrl = "/";
+  
+    const history = useHistory();
+    
     console.log(
       "values",
       this.state.first_name,
@@ -40,15 +43,16 @@ class Signup extends Component {
       .then(function (response) {
         console.log(response);
         if (response.data.code === 200) {
-          var loginscreen = [];
-          loginscreen.push(<Login parentContext={this} />);
-          let loginmessage = "Not Signed up yet. Go to Sign up";
-          self.props.parentContext.setState({
-            loginscreen: loginscreen,
-            loginmessage: loginmessage,
-            buttonLabel: "Sign Up",
-            isLogin: true,
-          });
+          history.push('/verify/info');
+          // var loginscreen = [];
+          // loginscreen.push(<Login parentContext={this} />);
+          // let loginmessage = "Not Signed up yet. Go to Sign up";
+          // self.props.parentContext.setState({
+          //   loginscreen: loginscreen,
+          //   loginmessage: loginmessage,
+          //   buttonLabel: "Sign Up",
+          //   isLogin: true,
+          // });
         }
       })
 

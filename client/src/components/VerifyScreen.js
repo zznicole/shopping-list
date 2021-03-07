@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import RaisedButton from "material-ui/RaisedButton";
 
-import Login from "./Login";
-import Signup from "./Signup";
 import {Button, CardContent, Toolbar, Typography} from "@material-ui/core";
 import {useHistory, useParams} from "react-router-dom";
 import AppBar from "material-ui/AppBar";
@@ -64,12 +62,15 @@ export default function VerifyScreen() {
   
   let title = "";
   let message = "";
-  if (status == 's') {
+  if (status == 'postreg') {
+    title = "Verify your account!";
+    message = "We have sent an email to the email address you provided. To complete registration, click the link you can find in that email.";
+  } else if (status == 'success') {
     title = "Congratulations!";
-    message = "Your account has been created.";
-  } else {
+    message = "Your account registration is complete and you can now start to use ourshoppinglist!";
+  } else if (status == 'failure') {
     title = "Error!";
-    message = "We were not able to verify your account.";
+    message = "Something went wrong, we were not able to verify your account.";
   }
   
   return (
