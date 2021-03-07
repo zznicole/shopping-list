@@ -6,13 +6,10 @@ import {
   Container,
   TextField,
   Button,
-  Checkbox,
-  FormControlLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
-import { LinkedIn } from "@material-ui/icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme) => ({
   screen: {
@@ -47,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   form: {
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "2rem",
+    paddingTop: "3rem",
     paddingBottom: "2rem",
     position: "relative",
   },
@@ -65,45 +62,30 @@ const useStyles = makeStyles((theme) => ({
   signupBtn: {
     width: "100%",
   },
-  forgotPasswoodBtn: {
-    fontSize: "8",
-  },
 }));
 
-export default function LoginScreen(props) {
+export default function PwResetScreen(props) {
   const classes = useStyles();
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState();
   const history = useHistory();
-
   const apiBaseUrl = "/";
-
-  let loggedIn = document.cookie.replace(
-    /(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/,
-    "$1",
-  );
-  if (loggedIn) {
-    history.push("/lists");
-  }
 
   const onClickHandler = (event) => {
     let payload = {
-      userid: username,
       password: password,
-      keepLoggedIn: true,
+      confirm_password: password,
     };
     axios
-      .post(apiBaseUrl + "login", payload)
+      .post(apiBaseUrl + "passwordreset", payload)
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {
-          console.log("Login successful");
-          history.push("/lists");
-        } else if (response.status === 401) {
-          console.log("Error logging in");
-          alert("Error logging in");
+          console.log("Reset password successful");
           history.push("/");
+        } else if (response.status === 401) {
+          console.log("Error resetting password");
+          alert("Error resetting password");
+          history.push("/passwordreset:request");
         }
       })
       .catch(function (error) {
@@ -115,23 +97,20 @@ export default function LoginScreen(props) {
     <div className={classes.screen}>
       <Container className={classes.formContainer}>
         <form className={classes.form}>
-          <FontAwesomeIcon
-            className={classes.pinIcon}
-            icon={faThumbtack}
-            color="red"
-            transform={{ rotate: 42 }}
-          />
-          <h1 className={classes.heading}>Our Shopping List</h1>
+          <FontAwesomeIcon className={classes.pinIcon} icon={faThumbtack} color="red" transform={{ rotate: 42 }}/>
+          <h1 className={classes.heading}>Reset Your Password</h1>
           <FormControl>
+          <br />
             <TextField
-              type="Email"
+              type="password"
               required
               autoComplete="off"
               variant="standard"
               size="medium"
-              label="Email"
-              floatingLabelText="Email"
-              onChange={(e) => setUsername(e.target.value)}
+              label="New Password"
+              floatingLabelText="New Password"
+              onChange={(e) => setPassword(e.target.value)}
+              backgroundColor="#FCF6B1"
             />
             <br />
             <TextField
@@ -140,50 +119,21 @@ export default function LoginScreen(props) {
               autoComplete="off"
               variant="standard"
               size="medium"
-              label="Password"
-              floatingLabelText="Password"
+              label="Confirm New Password"
+              floatingLabelText="Confirm New Password"
               onChange={(e) => setPassword(e.target.value)}
               backgroundColor="#FCF6B1"
             />
-            <Link
-              className={classes.forgotPasswoodBtn}
-              to="/passwordresetrequest"
-              color="primary"
-            >
-              Forgot Your Password?
-            </Link>
             <br />
             <Button
               className={classes.loginBtn}
-              variant="outlined"
+              variant="contained"
               color="secondary"
               onClick={onClickHandler}
             >
-              LOG IN
+              Reset Password
             </Button>
             <br />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={keepLoggedIn}
-                  onChange={(event, newValue) =>
-                    setKeepLoggedIn({ keepLoggedIn: !keepLoggedIn })
-                  }
-                />
-              }
-              label="Keep me logged in."
-            />
-            <br />
-            <p>Not signed up yet? Sign up now!</p>
-            <Link to="/signup" style={{ textDecoration: "none" }}>
-              <Button
-                className={classes.signupBtn}
-                variant="contained"
-                color="secondary"
-              >
-                SIGN UP
-              </Button>
-            </Link>
           </FormControl>
         </form>
       </Container>

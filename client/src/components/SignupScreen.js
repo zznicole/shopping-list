@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoginScreen(props) {
+export default function SignupScreen(props) {
   const classes = useStyles();
   const [firstName, setFirstname] = useState("");
   const [lastName, setLastname] = useState("");
