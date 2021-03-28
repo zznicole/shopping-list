@@ -28,6 +28,12 @@ let sessions = {};
 // Maps user id => sessions
 let sessionByUserId = {};
 
+function allSessions() {
+  return sessions;
+}
+function numberOfSessions() {
+  return Object.keys(sessions).length;
+}
 function remoteIp(req) {
   return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 }
@@ -123,6 +129,8 @@ exports.clearSession = clearSession;
 exports.handleSession = handleSession;
 exports.setSessionUser = setSessionUser;
 exports.clearAllSessionsForUser = clearAllSessionsForUser;
+exports.numberOfSessions = numberOfSessions;
+exports.allSessions = allSessions;
 
 function getAllSessions() {
   return sessions;

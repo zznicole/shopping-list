@@ -20,6 +20,7 @@ const session = require('./src/session.js');
 const config = require('config');
 const lists = require('./src/lists.js');
 const userid = require('./src/userid.js');
+const admin = require('./src/admin.js');
 
 dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
@@ -537,6 +538,18 @@ app.post('/sharelist', async function(req, res) {
   }
 });
 
+app.get('/admindata', async function(req, res) {
+  s = session.handleSession(req, res);
+  if (s.user /*&& s.user.isAdmin()*/) {
+    console.log("getadmin data");
+    let adminPage = admin.getData(odb, req.query.item);
+    res.json({code: 200, result: adminPage});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
+});
+
 app.get('/getshares', async function(req, res) {
   console.log('getshares');
   console.log(req.query);
@@ -547,7 +560,8 @@ app.get('/getshares', async function(req, res) {
     if (list.owner == s.user.userId) {
       items = [];
       for (let usr of list.users) {
-        items.push({itemid: odb.objectid(usr), title: usr.screenName + " (" + usr.userId + ")", subtitle: usr.userId});
+        items.push({itemid: odb.objectid(usr), 
+          title: usr.screenName + " (" + usr.userId + ")", subtitle: usr.userId});
       }
       results = {listid: req.query.listid, items: items };
       res.json({code: 200, result: results});

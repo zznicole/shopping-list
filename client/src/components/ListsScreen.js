@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import Lists from './Lists';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Toolbar, Button, Fab } from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+import { Typography, AppBar, Toolbar, Button, Fab, IconButton } from '@material-ui/core';
+import { Add, SupervisorAccount } from '@material-ui/icons';
 import axios from "axios";
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -173,6 +173,11 @@ export default function ListScreen() {
               onClick={(event) => addList(event)}
             />
           </Fab>
+          <Link to='/admin'>
+            <IconButton edge="start" color="inherit" className={classes.SupervisorAccount}>
+              <SupervisorAccount />
+            </IconButton>
+          </Link>
         </Toolbar>
       </AppBar>
     </div>

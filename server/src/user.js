@@ -104,6 +104,18 @@ let unverifiedUsers = {};
 let maxNumberOfUnverifiedUsers = 100;
 let verificationTimeout = { timeout: 60, unit: "minutes"};
 
+function numberOfUnverifiedUsers() {
+  return {numberOfUnverifiedUsers:Object.keys(unverifiedUsers).length,
+    maxNumberOfUnverifiedUsers: maxNumberOfUnverifiedUsers,
+    verificationTimeout: verificationTimeout};
+}
+exports.numberOfUnverifiedUsers = numberOfUnverifiedUsers;
+
+function allUnverifiedUsers() {
+  return unverifiedUsers;
+}
+exports.allUnverifiedUsers = allUnverifiedUsers;
+
 function createUser(userName, email, first_name, last_name, password, odb)
 {
   console.log('Create user')
