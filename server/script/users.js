@@ -133,7 +133,8 @@ function restoreUsers() {
 
 function makeUserAdmin(userId) {
   let users = [];
-  odb.query(users, "select<User>(eq(userId,\"" + dboo.escape_string(userId) + "\"))")
+  let q = "select<User>(in(userId,select<UserId>(eq(userId,\"" + dboo.escape_string(userId) + "\"))))";
+  odb.query(users, q);
   if (users.length == 1) {
     let usr = users[0];
     console.log(usr);
@@ -153,12 +154,15 @@ function makeUserAdmin(userId) {
 
 if ((process.argv.length == 4) && process.argv[2] == "makeAdmin") {
   makeUserAdmin(process.argv[3]);
-}
-
-if ((process.argv.length == 3) && process.argv[2] == "backup") {
+} else if ((process.argv.length == 3) && process.argv[2] == "backup") {
   backupUsers();
-}
-
-if ((process.argv.length == 3) && process.argv[2] == "restore") {
+} else if ((process.argv.length == 3) && process.argv[2] == "restore") {
   restoreUsers();
+} else {
+  console.log("Usage: (from shopping-list/server directory)");
+  console.log("    NODE_ENV=<env> node ./script/users.js <command> [<options>...]");
+  console.log("Where command is one of:");
+  console.log("    makeAdmin <user id (email)>   Makes the user an admin");
+  console.log("    backup                        Backs up all users in a number of files in current dir");
+  console.log("    restore                       Restores all users from files produced by backup");
 }

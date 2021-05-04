@@ -167,9 +167,9 @@ function mapAllItems(odb, shoppinglist) {
 
 function initData(odb, folder) {
   // These erase should work, but there is a bug with node version that causes a crash
-  // odb.query("erase<Word>()");
-  // odb.query("erase<WordCategory>()");
-  // odb.query("erase<Config>()");
+  odb.query("erase<Word>()");
+  odb.query("erase<WordCategory>()");
+  odb.query("erase<Config>()");
   init(odb);
   let allLanguages = new Set();
   for (let l of cfg.languages) {
@@ -206,7 +206,7 @@ function initData(odb, folder) {
     odb.commit(cat);
   });
   // This erase should work, but there is a bug with node version that causes a crash
-  // odb.query("erase<Config>()");
+  odb.query("erase<Config>()");
   odb.commit(cfg);
 }
 
