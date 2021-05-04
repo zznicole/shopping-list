@@ -19,6 +19,7 @@ class User {
   lastName = "";
   permissions = [];
   lists = [];
+  friends = [];
   preferred_locale = "";
   
   constructor() {
@@ -45,6 +46,7 @@ dboo.class(User,
    {"lastName": dboo.string},
    {"permissions": dboo.array(dboo.string)},
    {"lists": dboo.array(lists.ShoppingList)},
+   {"friends": dboo.array(userid.UserId)},
    {"preferred_locale": dboo.string},
   ]
 );

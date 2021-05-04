@@ -26,7 +26,8 @@ do
 done
 
 # Server address:
-server_address=13.53.58.58
+#server_address=13.53.58.58
+server_address=13.49.102.26
 # SSH key for accessing server:
 keys_file="${HOME}/src/shoppinglist_config/ec2_key.pem"
 
@@ -136,7 +137,7 @@ echo "created ${server_install_dir}/server/   done."
 #################################################################################
 # 4. Copy files to server
 echo "copy client web pack to server..."
-rsync -var -e "ssh -i \"${keys_file}\"" client/build/*  ubuntu@13.53.58.58:${server_install_dir}/client/build/
+rsync -var -e "ssh -i \"${keys_file}\"" client/build/*  ubuntu@${server_address}:${server_install_dir}/client/build/
 #scp -r -i "${keys_file}" client/build/* ubuntu@13.53.58.58:${server_install_dir}/client/build/
 echo "copy client web pack to server...done"
 echo "copy server code to server..."
@@ -150,7 +151,7 @@ rsync -var -e "ssh -i \"${keys_file}\"" \
   server/data \
   server/server.js \
   server/src \
-    ubuntu@13.53.58.58:${server_install_dir}/server
+    ubuntu@${server_address}:${server_install_dir}/server
 echo "copy server code to server...done"
 echo "link server configuration directory..."
 ssh -i "${keys_file}" ${server_user}@${server_address} "cd ${server_install_dir}/server; ln -s ${server_config_dir} config"

@@ -6,9 +6,6 @@ import {
   Container,
   TextField,
   Button,
-  Checkbox,
-  FormControlLabel,
-  Icon,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -75,8 +72,6 @@ export default function SignupScreen(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [complete, setComplete] = useState(false);
-  const [keepLoggedIn, setKeepLoggedIn] = useState();
 
   const apiBaseUrl = "/";
 
@@ -106,7 +101,7 @@ export default function SignupScreen(props) {
   };
 
   function Message() {
-    if (message.length == 0) {
+    if (message.length === 0) {
       return <>
       <br/>
       <br/>

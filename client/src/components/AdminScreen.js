@@ -1,18 +1,11 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import TobuyList from './TobuyList';
-import TobuyForm from './TobuyForm';
-import { Link, useParams } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { maxWidth } from  '@material-ui/system';
-import {AppBar, Toolbar, IconButton, Typography, Container, Card, CardContent} from '@material-ui/core';
-import EdiText from 'react-editext';
-import {Home, Computer, Storage, People, Delete, PeopleAlt, BarChart, PeopleOutline} from '@material-ui/icons'
+import {AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
+import {Home, People, PeopleAlt, BarChart, PeopleOutline} from '@material-ui/icons'
 import axios from "axios";
-import Box from '@material-ui/core/Box';
-import TobuyItem from "./TobuyItem";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -59,7 +52,6 @@ let fetchingList = false;
 export default function AdminScreen() {
   const classes = useStyles();
   const [admdata, setAdmData] = useState({groups:[]});
-  const history = useHistory();
   
   function fetchList(itemType) {
     let url = apiBaseUrl + "admindata?item=" + itemType;
@@ -129,13 +121,13 @@ export default function AdminScreen() {
   function formatValue(cellValue) {
     let value = cellValue.value;
     let unit = cellValue.unit ? cellValue.unit : "";
-    if (unit == 'count') {
+    if (unit === 'count') {
       return (value).toLocaleString('en');
-    } else if (unit == 'bytes') {
+    } else if (unit === 'bytes') {
       return formatBytes(value, 3);
-    } else if (unit == 'datetime') {
+    } else if (unit === 'datetime') {
       return value;
-    } else if (unit == 'seconds') {
+    } else if (unit === 'seconds') {
       let y = ~~(value / (3600*24*365));
       let d = ~~((value / (3600*24)) % 365);
       let h = ~~((value / 3600) % 24);
@@ -174,7 +166,7 @@ export default function AdminScreen() {
     {group.items.map((row) => (
         <TableRow>
           {row.map((cellValue, index) => {
-            if (index == 0) {
+            if (index === 0) {
               return <TableCell component="th" scope="row" align="left">{formatValue(cellValue)}</TableCell>;
             } else {
               return <TableCell component="th" scope="row" align="right">{formatValue(cellValue)}</TableCell>;

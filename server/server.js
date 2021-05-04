@@ -518,7 +518,80 @@ app.post('/sharelist', async function(req, res) {
         if (otherUser.lists.find(item => item === list) == undefined) {
           otherUser.lists.push(list);
         }
-        odb.commit([otherUser, list]);
+        if (s.user.friends.find(item => item === otherUser.userId) == undefined) {
+          s.user.friends.push(otherUser.userId);
+        } 
+        odb.commit([s.user, otherUser, list]);
+  
+        res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
+        console.log(list.description + " shared with " + otherUserId);
+      } else {
+        res.status(404);
+        res.json({code: 404, message: "User '" + otherUserId + "' not found!"});
+        console.log( otherUserId + " not found!");
+      }
+    } else {
+      res.status(404);
+      res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner!"});
+      console.log("User ('" +  s.user.userId.userId + "') is not the owner");
+    }
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "no access"});
+  }
+});
+
+
+app.post('/sharelistbyid', async function(req, res) {
+  console.log('sharelist');
+  console.log(req.body);
+  s = session.handleSession(req, res);
+  if (s.user) {
+    let list = odb.object(req.body.listid);
+    let otherUserId = odb.object(req.body.userid);
+    // Only owner can share
+    console.log("List owner: " + list.owner.userId);
+    console.log("User: " + s.user.userId.userId);
+    if (list.owner === s.user.userId) {
+      // let otherUserId = req.body.userid;
+      // Can't share with one self:
+      if (list.owner == otherUserId) {
+        res.status(403);
+        res.json({code: 403, message: "You cannot share with yourself!"});
+        console.log("Cannot share with yourself");
+        return;
+      }
+      let otherUser = user.findUser(odb, otherUserId.userId);
+      if (otherUser) {
+        if (list.users.find(usrId => usrId === otherUserId) ) {
+          for( var i = 0; i < list.users.length; i++){ 
+              if ( list.users[i] === otherUserId) { 
+                  list.users.splice(i, 1); 
+              }
+          }
+          for( var i = 0; i < otherUser.lists.length; i++){ 
+              if ( otherUser.lists[i] === list) { 
+                  otherUser.lists.splice(i, 1); 
+              }
+          }
+          odb.commit([otherUser, list]);
+          console.log("List is already shared with user");
+          res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
+          return;
+          // res.status(403);
+          // res.json({code: 403, message: "List is already shared with user '" + otherUserId + "'!"});
+          // console.log("List is already shared with user");
+          // return;
+        }
+  
+        list.users.push(otherUser.userId);
+        if (otherUser.lists.find(item => item === list) == undefined) {
+          otherUser.lists.push(list);
+        }
+        if (s.user.friends.find(item => item === otherUser.userId) == undefined) {
+          s.user.friends.push(otherUser.userId);
+        } 
+        odb.commit([s.user, otherUser, list]);
   
         res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
         console.log(list.description + " shared with " + otherUserId);
@@ -562,8 +635,18 @@ app.get('/getshares', async function(req, res) {
       for (let usr of list.users) {
         items.push({itemid: odb.objectid(usr), 
           title: usr.screenName + " (" + usr.userId + ")", subtitle: usr.userId});
+        // This part feels a bit misplaced.
+        if (s.user.friends.find(item => item === usr) == undefined) {
+          s.user.friends.push(usr);
+        }
       }
-      results = {listid: req.query.listid, items: items };
+      friends = [];
+      for (let usr of s.user.friends) {
+        let checked = !(list.users.find(item => item === usr) == undefined);
+        friends.push({itemid: odb.objectid(usr), 
+          title: usr.screenName + " (" + usr.userId + ")", subtitle: usr.userId, checked: checked});
+      }
+      results = {listid: req.query.listid, items: items, friends: friends };
       res.json({code: 200, result: results});
       console.log(results);
   

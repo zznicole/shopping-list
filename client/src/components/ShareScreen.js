@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import { FormControl, Container, TextField, AppBar, Toolbar, Typography, IconButton, Fab } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
@@ -59,7 +59,7 @@ export default function TobuyForm({ addTobuy }) {
       .then(function (response) {
         try {
           doNotFetch = true;
-          setShares(response.data.result.items);
+          setShares(response.data.result.friends);
         } catch (e) {
           console.log(e);
         }
@@ -83,6 +83,20 @@ export default function TobuyForm({ addTobuy }) {
   function shareWithUser(email) {
     axios
       .post(apiBaseUrl + "sharelist", {listid: listid, userid: email})
+      .then(function (response) {
+        fetchList();
+      }).catch(reason => {
+        if (reason.response.status === 401) {
+          history.push('/');
+        } else {
+          alert(reason.response.data.message);
+        }
+      });
+  }
+  
+  function shareWithUserById(id) {
+    axios
+      .post(apiBaseUrl + "sharelistbyid", {listid: listid, userid: id})
       .then(function (response) {
         fetchList();
       }).catch(reason => {
@@ -137,8 +151,7 @@ export default function TobuyForm({ addTobuy }) {
       </form>
       <TobuyList
         tobuys={shares}
-        checkTobuy={function (id) {}}
-        deleteTobuy={removeShare}
+        checkTobuy={shareWithUserById}
       />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>

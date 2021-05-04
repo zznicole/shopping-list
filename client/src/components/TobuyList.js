@@ -13,6 +13,7 @@ export default function TobuyList({ tobuys, checkTobuy, deleteTobuy, editTobuy, 
           checkTobuy={checkTobuy}
           id={tobuy.itemid}
           isCompleted={tobuy.isCompleted}
+          checked={tobuy.checked ? tobuy.checked : tobuy.isCompleted}
           deleteTobuy={deleteTobuy}
           editTobuy={editTobuy}
           />

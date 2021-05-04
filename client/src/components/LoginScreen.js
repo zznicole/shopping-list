@@ -12,7 +12,6 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
-import { LinkedIn } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   screen: {
@@ -80,7 +79,7 @@ export default function LoginScreen(props) {
   const apiBaseUrl = "/";
 
   let loggedIn = document.cookie.replace(
-    /(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/,
+    /(?:(?:^|.*;\s*)loggedIn\s*=\s*([^;]*).*$)|^.*$/,
     "$1",
   );
   if (loggedIn) {
