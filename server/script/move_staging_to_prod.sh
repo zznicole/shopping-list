@@ -1,5 +1,5 @@
 # Server address:
-server_address=13.53.58.58
+server_address=13.49.102.26
 # SSH key for accessing server:
 keys_file="${HOME}/src/shoppinglist_config/ec2_key.pem"
 

@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
 import EdiText from 'react-editext';
-import { Home, Share, Category, FormatListBulleted } from '@material-ui/icons'
+import { Home, Share, Category, FormatListBulleted, Sort, Reorder } from '@material-ui/icons'
 import axios from "axios";
 import Box from '@material-ui/core/Box';
 
@@ -54,6 +54,9 @@ export default function TobuyListScreen() {
     let url = apiBaseUrl + "getlist?listid=" + listid;
     if (list.aggregated) {
       url = apiBaseUrl + "aggregatedlist?listid=" + listid;
+    }
+    if (list.uncheckedFirst) {
+      url = url + "&uncheckedfirst=true";
     }
     axios
       .get(url)
@@ -181,6 +184,14 @@ export default function TobuyListScreen() {
     list.aggregated = false;
     fetchList();
   }
+  const switchToUncheckedFirst = () => {
+    list.uncheckedFirst = true;
+    fetchList();
+  }
+  const switchToOriginalOrder = () => {
+    list.uncheckedFirst = false;
+    fetchList();
+  }
   function screenName(user) {
     if (user.screenName && user.screenName.length > 0) {
       return user.screenName + " (" + user.userId + ")";
@@ -208,6 +219,17 @@ export default function TobuyListScreen() {
     } else {
       return <><IconButton edge="end"  color="inherit" className={classes.shareButton}>
             <Category onClick={switchToAggregated} />
+      </IconButton></>;
+    }
+  }
+  function UncheckedFirst() {
+    if (list.uncheckedFirst) {
+      return <><IconButton edge="end"  color="inherit" className={classes.shareButton}>
+            <Reorder onClick={switchToOriginalOrder} />
+      </IconButton></>;
+    } else {
+      return <><IconButton edge="end"  color="inherit" className={classes.shareButton}>
+            <Sort onClick={switchToUncheckedFirst} />
       </IconButton></>;
     }
   }
@@ -267,6 +289,7 @@ export default function TobuyListScreen() {
             </IconButton>
           </Link>
           <Aggregator />
+          <UncheckedFirst />
           <Sharing />
         </Toolbar>
       </AppBar>

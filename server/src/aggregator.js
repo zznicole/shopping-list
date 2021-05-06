@@ -26,7 +26,6 @@ class Word extends lists.ItemType {
     this.stems = [];
     for (let i = 0; i < translations.length; ++i) {
       if (languages[i] && languages[i].trim().length > 0) {
-        console.log(languages[i]);
         this.stems.push( snowball.stemword(translations[i], languages[i]));
       }
     }
@@ -92,29 +91,24 @@ function languageIx(language) {
 
 function findCategory(odb, text) {
   let words = text.toLowerCase().split(/\s/);
-  console.log("findCategory 1: " + words);
   
   let dwords = [];
   for (let i = 0; i < words.length - 1; ++i) {
     dwords.push(`${words[i]} ${words[i+1]}`);
   }
   words = words.concat(dwords);
-  console.log("findCategory 2: " + words);
   
   words = words.map(itm => dboo.escape_string(itm));
-  console.log("findCategory 3: " + words);
   let stems = new Set();
   for (let l of cfg.languages) {
     for (let itm of words) {
-      console.log(l + ": " + itm);
       stems.add(snowball.stemword(itm, l));
     }
   }
   
-  console.log("stems: " + stems);
-  for (let s of stems) {
-    console.log(s);
-  }
+  // for (let s of stems) {
+  //   console.log(s);
+  // }
   if (stems.size > 0) {
     let qar = '{';
     for (let w of stems) {
@@ -124,7 +118,6 @@ function findCategory(odb, text) {
     qar = qar + '}';
   
     let wordQuery = `select<Word>(in_seq(stems, ${qar}))`;
-    console.log(wordQuery);
     let foundWords = [];
     odb.query(foundWords, wordQuery);
     if (foundWords.length == 0) {
@@ -135,10 +128,8 @@ function findCategory(odb, text) {
     });
     let wordId = odb.objectid(foundWords[0]);
     let catQuery = `select<WordCategory>(in_seq(words, {'${wordId}'}))`;
-    console.log(catQuery);
     let categories = [];
     odb.query(categories, catQuery);
-    console.log(categories);
   
     if (categories.length > 0) {
       return [foundWords[0], categories[0]];
@@ -152,7 +143,7 @@ function mapItem(odb, item) {
     item.itemType = wordAndCat[0];
     item.category = wordAndCat[1];
   } else {
-    item.category = cfg.unknownCategory;
+    item.category = cfg.categoryUnknown;
   }
   
   return item;

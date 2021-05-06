@@ -275,7 +275,6 @@ app.get('/aggregatedlist', async function(req, res) {
   if (s.user) {
     // get from query string (from client's browser setting)
     let userLocale = req.query.locale;
-    console.log("User locale: " + userLocale);
     // if user has some preferences for this app, use that instead
     if (s.user.preferred_locale && s.user.preferred_locale.length > 0) {
       userLocale = s.user.preferred_locale;
@@ -285,6 +284,10 @@ app.get('/aggregatedlist', async function(req, res) {
     if (userLocale && userLocale > 0) {
       langIx = aggregator.languageIx(s.user.preferred_locale);
     }
+    let uncheckedFirst = false;
+    if (req.query.uncheckedfirst !== undefined) {
+      uncheckedFirst = req.query.uncheckedfirst;
+    }
     
     let list = odb.object(req.query.listid);
     // Classify all items to category
@@ -293,35 +296,56 @@ app.get('/aggregatedlist', async function(req, res) {
     let items = new Map();
     // Create a map of lists. The map's key is category 
     // and the mapped list will contain all items for that category 
+    let checkedCategory = {};
+    let cats_keys = [];
     for (let item of list.items) {
       let category = item.category;
+      if (uncheckedFirst && item.done) {
+        category = checkedCategory;
+      }
       if (!category)  {
         category = defaultCategory;
       }
       if (!items.has(category)) {
         items.set(category, []);
+        if (category !== checkedCategory) {
+          cats_keys.push(category);
+        }
       }
       items.get(category).push(item);
-      console.log(category.summary + ": " + item.summary);
     }
     
     // Build a list with all categories and items
     let aggregatedList = [];
-    for (let category of items.keys()) {
+    if (uncheckedFirst) {
+      cats_keys.push(checkedCategory);
+    }
+    for (let category of cats_keys) {
       if (!category) {
         continue;
       }
-      subtitle = "";//category.description;
-      aggregatedList.push({
-        itemid: odb.objectid(category),
-        title: category.title(langIx),
-        subtitle: subtitle,
-        itemType: "header",
-        isCompleted: false
-      });
+      if (category === checkedCategory) {
+        subtitle = "";//category.description;
+        aggregatedList.push({
+          itemid: "0123012301230123",
+          title: "Checked",
+          subtitle: "",
+          itemType: "header",
+          isCompleted: false
+        });
+      } else {
+        subtitle = "";//category.description;
+        aggregatedList.push({
+          itemid: odb.objectid(category),
+          title: category.title(langIx),
+          subtitle: subtitle,
+          itemType: "header",
+          isCompleted: false
+        });
+      }
       // Sort items based on locale... (TODO: currently based on english as it is index 0)
       let subList = items.get(category);
-      subList.sort(function (a,b){
+      subList.sort(function (a, b){
         if (a.itemType && b.itemType) {
           let strA = a.itemType.title(langIx);
           let strB = b.itemType.title(langIx);
@@ -335,7 +359,6 @@ app.get('/aggregatedlist', async function(req, res) {
         let subtitle = item.summary;
         if (item.itemType) {
           subtitle = item.itemType.title(langIx);
-          console.log("item.itemType: " + itemtitle);
         }
         if (item.category) {
           subtitle += " " + item.category.summary;
@@ -351,7 +374,6 @@ app.get('/aggregatedlist', async function(req, res) {
       }
     }
     let listIsOwn = s.user.userId === list.owner;
-    console.log(aggregatedList);
     results = {
       listid: req.query.listid,
       summary: list.summary,
@@ -362,7 +384,8 @@ app.get('/aggregatedlist', async function(req, res) {
       shareCount: list.users.length,
       sharedWith: listIsOwn ? list.users : [],
       items: aggregatedList,
-      aggregated: true
+      aggregated: true,
+      uncheckedFirst: uncheckedFirst
     };
     res.json({code: 200, result: results});
   } else {
@@ -376,6 +399,12 @@ app.get('/getlist', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user) {
     let list = odb.object(req.query.listid);
+    let uncheckedFirst = false;
+    if (req.query.uncheckedfirst !== undefined) {
+      uncheckedFirst = req.query.uncheckedfirst;
+    }
+    let uncheckedItems = [];
+    
     let items = [];
     for (let item of list.items) {
       let subtitle = "";
@@ -385,14 +414,24 @@ app.get('/getlist', async function(req, res) {
       if (item.category) {
         subtitle += " [" + item.category.summary + "]";
       }
-      items.push({
-        itemid: odb.objectid(item),
-        title: item.summary,
-        subtitle: subtitle,
-        itemType: "normal ",
-        isCompleted: item.done
-      });
+      let listitem = {
+          itemid: odb.objectid(item),
+          title: item.summary,
+          subtitle: subtitle,
+          itemType: "normal ",
+          isCompleted: item.done
+        };
+      if (uncheckedFirst && !item.done) {
+        uncheckedItems.push(listitem);
+      } else {
+        items.push(listitem);
+      }
     }
+    
+    if (uncheckedFirst) {
+      items = uncheckedItems.concat(items);
+    }
+    
     let listIsOwn = s.user.userId === list.owner;
     results = {
       listid: req.query.listid,
@@ -404,7 +443,9 @@ app.get('/getlist', async function(req, res) {
       shareCount: list.users.length,
       sharedWith: listIsOwn ? list.users : [],
       items: items,
-      aggregated: false };
+      aggregated: false,
+      uncheckedFirst: uncheckedFirst
+     };
     res.json({code: 200, result: results});
   } else {
     res.status(401);
@@ -502,13 +543,11 @@ app.post('/sharelist', async function(req, res) {
       if (list.owner.userId == otherUserId) {
         res.status(403);
         res.json({code: 403, message: "You cannot share with yourself!"});
-        console.log("Cannot share with yourself");
         return;
       }
       if (list.users.find(usrId => usrId.userId == otherUserId) ) {
         res.status(403);
         res.json({code: 403, message: "List is already shared with user '" + otherUserId + "'!"});
-        console.log("List is already shared with user");
         return;
       }
   
@@ -524,16 +563,13 @@ app.post('/sharelist', async function(req, res) {
         odb.commit([s.user, otherUser, list]);
   
         res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
-        console.log(list.description + " shared with " + otherUserId);
       } else {
         res.status(404);
         res.json({code: 404, message: "User '" + otherUserId + "' not found!"});
-        console.log( otherUserId + " not found!");
       }
     } else {
       res.status(404);
       res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner!"});
-      console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
     res.status(401);
@@ -558,7 +594,6 @@ app.post('/sharelistbyid', async function(req, res) {
       if (list.owner == otherUserId) {
         res.status(403);
         res.json({code: 403, message: "You cannot share with yourself!"});
-        console.log("Cannot share with yourself");
         return;
       }
       let otherUser = user.findUser(odb, otherUserId.userId);
@@ -575,7 +610,6 @@ app.post('/sharelistbyid', async function(req, res) {
               }
           }
           odb.commit([otherUser, list]);
-          console.log("List is already shared with user");
           res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
           return;
           // res.status(403);
@@ -594,16 +628,13 @@ app.post('/sharelistbyid', async function(req, res) {
         odb.commit([s.user, otherUser, list]);
   
         res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});
-        console.log(list.description + " shared with " + otherUserId);
       } else {
         res.status(404);
         res.json({code: 404, message: "User '" + otherUserId + "' not found!"});
-        console.log( otherUserId + " not found!");
       }
     } else {
       res.status(404);
       res.json({code: 404, message: "User ('" +  s.user.userId.userId + "') is not the owner!"});
-      console.log("User ('" +  s.user.userId.userId + "') is not the owner");
     }
   } else {
     res.status(401);
