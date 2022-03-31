@@ -132,7 +132,7 @@ export default function ListScreen() {
   
   // Add a list
   const addList = (event) => {
-    createList("New list");
+    createList("Type in a list name");
   };
   const goToList = (id) => {
     history.push('/list/'+id);

@@ -1,11 +1,15 @@
 import React, { Component } from "react";
+import {useHistory} from "react-router-dom";
+
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import AppBar from "material-ui/AppBar";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
+
 import axios from "axios";
+
 import Login from "./Login";
-import {useHistory} from "react-router-dom";
+
 
 class Signup extends Component {
   constructor(props) {

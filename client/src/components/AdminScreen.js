@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import axios from "axios";
+
 import { makeStyles } from '@material-ui/core/styles';
 import {AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
 import {Home, People, PeopleAlt, BarChart, PeopleOutline} from '@material-ui/icons'
-import axios from "axios";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';

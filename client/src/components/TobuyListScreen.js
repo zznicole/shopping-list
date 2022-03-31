@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import TobuyList from './TobuyList';
 import TobuyForm from './TobuyForm';
-import { Link, useParams } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+
+import axios from "axios";
 
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
-import EdiText from 'react-editext';
+import { AppBar, Toolbar, IconButton, Typography, Input, FormControl, Fab } from '@material-ui/core';
 import { Home, Share, Category, FormatListBulleted, Sort, Reorder } from '@material-ui/icons'
-import axios from "axios";
 import Box from '@material-ui/core/Box';
 
 const apiBaseUrl = "/";
@@ -99,6 +97,11 @@ export default function TobuyListScreen() {
           alert(reason.response.data.message);
         }
       });
+  }
+
+  const listTitleSubmitHandler=(e)=> {
+    e.preventDefault();
+//    editList(list.summary);
   }
 
   function onSave(val) {
@@ -267,7 +270,20 @@ export default function TobuyListScreen() {
   return (
     <div>
       <AppBar position="fixed" style={{backgroundColor:"#00bcd4"}}>
-        <EdiText variant="h5" type="text" value={list.summary} className={classes.header} onSave={onSave} />
+        {/* <EdiText variant="h5" type="text" value={list.summary} className={classes.header} onSave={onSave} /> */}
+        <form onSubmit={listTitleSubmitHandler}>
+          <FormControl fullWidth={true} style={{ marginTop: 16 }}>
+            <Input
+              id="outlined-basic"
+              label="Type list title here"
+              required={true}
+              value={list.summary}
+              onChange={(e) => editList(e.target.value)}
+              onSave={onSave}
+              className={classes.hearder}
+            />
+          </FormControl>
+        </form>
       </AppBar>
       <Toolbar />
       <TobuyForm addTobuy={addTobuy}  />

@@ -17,7 +17,7 @@ export default function TobuyForm({ addTobuy }) {
             id="outlined-basic"
             label="Type item here"
             required={true}
-            value={text}
+            value={text }
             onChange={(e) => setText(e.target.value)}
            
           />
