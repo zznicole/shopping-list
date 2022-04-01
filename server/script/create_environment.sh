@@ -33,10 +33,6 @@ printf "\n"
 
 db_group=${db_user}
 
-# Server address:
-server_address=13.53.58.58
-# SSH key for accessing server:
-keys_file="${HOME}/src/shoppinglist_config/ec2_key.pem"
 # If doing a clean build from github, do it in this directory:
 local_build_dir="${HOME}/src/shoppinglist_build"
 server_user=ubuntu
@@ -45,7 +41,6 @@ server_config_dir="${user_home_dir}/shoppinglist/config"
 config_filepath=${server_config_dir}/${environment}.json
 
 # 1. create config file
-ssh -i "${keys_file}" ${server_user}@${server_address} "mkdir -p ${server_config_dir}"
 cat <<EOF >.temp.${environment}.json
 {
   "dbConfig": {
@@ -66,6 +61,22 @@ cat <<EOF >.temp.${environment}.json
 }
 EOF
 
-cat .temp.${environment}.json
-scp -i "${keys_file}" .temp.${environment}.json ${server_user}@${server_address}:${config_filepath}
+if [[ ! "${web_host}" = "localhost" ]]; then
+  cat .temp.${environment}.json
+  # Server address:
+  #server_address=13.53.58.58
+  server_address=localhost
+  # SSH key for accessing server:
+  mkdir -p ${server_config_dir}
+  cp .temp.${environment}.json ${config_filepath}
+else
+  cat .temp.${environment}.json
+  # Server address:
+  #server_address=13.53.58.58
+  server_address=13.49.102.26
+  # SSH key for accessing server:
+  keys_file="${HOME}/src/shoppinglist_config/ec2_key.pem"
+  ssh -i "${keys_file}" ${server_user}@${server_address} "mkdir -p ${server_config_dir}"
+  scp -i "${keys_file}" .temp.${environment}.json ${server_user}@${server_address}:${config_filepath}
+fi
 

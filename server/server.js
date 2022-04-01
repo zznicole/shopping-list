@@ -55,7 +55,7 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-let sslOptions = {
+let sslOptions = hostConfig.useSSL == false ? {} : {
    key: fs.readFileSync(sslConfig.key),
    cert: fs.readFileSync(sslConfig.cert)
 };
@@ -112,6 +112,7 @@ app.post('/login', async function(req, res) {
     if (user.passwordMatches(pwd, password)) {
       console.log("User " + userid + " logged in");
       let usr = user.findUser(odb, userid);
+      console.log(usr);
       if (usr) {
         session.setSessionUser(s, usr, keepLoggedIn);
         s.keepLoggedIn = keepLoggedIn;
