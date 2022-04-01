@@ -23,6 +23,10 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     margin: 'auto',
   },
+
+  listTitleInputContainer: {
+    padding: 16,
+  },
   
   appBar: {
     top: 'auto',
@@ -270,17 +274,17 @@ export default function TobuyListScreen() {
   return (
     <div>
       <AppBar position="fixed" style={{backgroundColor:"#00bcd4"}}>
-        {/* <EdiText variant="h5" type="text" value={list.summary} className={classes.header} onSave={onSave} /> */}
-        <form onSubmit={listTitleSubmitHandler}>
-          <FormControl fullWidth={true} style={{ marginTop: 16 }}>
+        <form onSubmit={listTitleSubmitHandler} className={classes.listTitleInputContainer}>
+          <FormControl fullWidth={false} style={{textAlign: 'center'}}>
             <Input
-              id="outlined-basic"
               label="Type list title here"
               required={true}
               value={list.summary}
               onChange={(e) => editList(e.target.value)}
               onSave={onSave}
               className={classes.hearder}
+              BorderBottom={false}
+              style={{ marginBottom: 16,textAlign: 'center'}}
             />
           </FormControl>
         </form>
