@@ -275,7 +275,7 @@ export default function TobuyListScreen() {
     <div>
       <AppBar position="fixed" style={{backgroundColor:"#00bcd4"}}>
         <form onSubmit={listTitleSubmitHandler} className={classes.listTitleInputContainer}>
-          <FormControl fullWidth={false} style={{textAlign: 'center'}}>
+          <FormControl fullWidth={true} style={{textAlign: 'center'}}>
             <Input
               label="Type list title here"
               required={true}
@@ -284,7 +284,8 @@ export default function TobuyListScreen() {
               onSave={onSave}
               className={classes.hearder}
               BorderBottom={false}
-              style={{ marginBottom: 16,textAlign: 'center'}}
+              style={{ flex: 1, width:'100%', minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+//              style={{ marginBottom: 6, textAlign: 'center'}}
             />
           </FormControl>
         </form>
