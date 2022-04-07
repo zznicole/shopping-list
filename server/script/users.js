@@ -2,6 +2,8 @@ const dboo = require('dboo');
 const config = require('config');
 const user = require('../src/user.js');
 const userid = require('../src/userid.js');
+const lists = require('../src/lists.js');
+const aggregator = require('../src/aggregator.js');
 const fs = require('fs');
 const readline = require('readline');
 
@@ -134,8 +136,9 @@ function restoreUsers() {
 function makeUserAdmin(userId) {
   let users = [];
   let q = "select<User>(in(userId,select<UserId>(eq(userId,\"" + dboo.escape_string(userId) + "\"))))";
+  console.log(q);
   odb.query(users, q);
-  if (users.length == 1) {
+  if (users.length > 1) {
     let usr = users[0];
     console.log(usr);
     if (!usr.permissions.includes(user.admin)) {

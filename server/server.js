@@ -199,7 +199,7 @@ app.get('/userlists', async function(req, res) {
         isCompleted: list.done,
         itemCount: list.items.length});
     }
-    res.json({code: 200, result: results});
+    res.json({code: 200, result: results, isAdmin: s.user.isAdmin()});
   } else {
     res.status(401);
     res.json({code: 401, message: "no access"});
@@ -648,7 +648,7 @@ app.post('/sharelistbyid', async function(req, res) {
 
 app.get('/admindata', async function(req, res) {
   s = session.handleSession(req, res);
-  if (s.user /*&& s.user.isAdmin()*/) {
+  if (s.user && s.user.isAdmin()) {
     console.log("getadmin data");
     let adminPage = admin.getData(odb, req.query.item);
     res.json({code: 200, result: adminPage});

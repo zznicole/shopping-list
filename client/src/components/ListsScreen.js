@@ -52,6 +52,7 @@ export default function ListScreen() {
 
   const classes = useStyles();
   const [lists, setLists] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   
   const apiBaseUrl = "/";
   const history = useHistory();
@@ -64,6 +65,7 @@ export default function ListScreen() {
           console.log("ok");
           fetchingLists = true;
           setLists(response.data.result);
+          setIsAdmin(response.data.isAdmin);
         } catch (e) {
           console.log(e);
         }
@@ -174,11 +176,15 @@ export default function ListScreen() {
               onClick={(event) => addList(event)}
             />
           </Fab>
-          <Link to='/admin'>
-            <IconButton edge="start" color="inherit" className={classes.SupervisorAccount}>
-              <SupervisorAccount />
-            </IconButton>
-          </Link>
+          {isAdmin === true ?
+            <Link to='/admin'>
+              <IconButton edge="start" color="inherit" className={classes.SupervisorAccount}>
+                <SupervisorAccount />
+              </IconButton>
+            </Link>
+            :
+            <br />
+          }
         </Toolbar>
       </AppBar>
     </div>

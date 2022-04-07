@@ -5,14 +5,17 @@ const session = require('./session.js');
 
 function getAllUsers(odb) {
   try {
-    let userIds = [];
-    odb.query(userIds, 'select<UserId>()');
-    function row(x) {
-      return [{value: x.userId}, {value: x.screenName, unit: "text"}];
-    }
+    let users = [];
+    odb.query(users, 'select<User>()');
+
     return {groups:[
-      {heading: "All users", items: userIds.map(x => (
-        [{value: x.userId}, {value: x.screenName, unit: "text"}]
+      {heading: "All users", items: users.map(x => (
+        
+        [{value: x.userId.userId},
+          {value: x.userId.screenName, unit: "text"},
+          {value: x.permissions.length > 0 ? x.permissions.toString() : "[]", unit: "text"},
+          {value: x.lists.length, unit: "count"}
+        ]
       ))}
     ]};
   }
@@ -94,7 +97,8 @@ function getStats(odb) {
       return stats;
     }
     let cstats = toMatrix(odb.client_stats());
-    let dbstats = toMatrix(odb.db_stats());
+    // let dbstats = toMatrix(odb.db_stats());
+    let dbstats = []
     
     return {groups:[
       {heading: "Shopping list objects", 
