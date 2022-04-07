@@ -5,6 +5,11 @@ const lists = require('./lists.js');
 const userid = require('./userid.js');
 const moment = require('moment')
 
+let testingLocally = false;
+if (env.testing && env.testing === true) {
+  testingLocally = true;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// class User
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +147,10 @@ function createUser(userName, email, first_name, last_name, password, odb)
       created: moment()
     };
     verification.sendVerificationMessage(userName, email, first_name, verificationCode);
+    if (testingLocally) {
+      verifyUser(userName, verificationCode, odb)
+    }
+
     return {code: 200, message: "User " + userName + " created!"};
   } else {
     console.log("Maximum number of unverified users reached!");
@@ -181,7 +190,9 @@ function findUser(odb, userName) {
   users = [];
   console.log(     "select<User>(in(userId, select<UserId>(eq(userId, '" + dboo.escape_string(userName) + "'))))");
   odb.query(users, "select<User>(in(userId, select<UserId>(eq(userId, '" + dboo.escape_string(userName) + "'))))");
-  if (users.length == 1) {
+  
+  // if (users.length == 1) {
+  if (users.length > 0) {
     let usr = users[0];
     return usr;
   }
@@ -199,6 +210,7 @@ function findUserPassword(odb, userName) {
   users = [];
   console.log("select<UserPassword>(in(userId, select<UserId>(eq(userId, '" + dboo.escape_string(userName) + "'))))");
   odb.query(users, "select<UserPassword>(in(userId, select<UserId>(eq(userId, '" + dboo.escape_string(userName) + "'))))");
+  users = users.filter((val, ind, arr) => arr.indexOf(val) === ind);
   if (users.length == 1) {
     let upwd = users[0];
     return upwd;

@@ -1,13 +1,23 @@
 const crypto = require('crypto');
 const config = require('config');
 hostConfig = config.get('hostConfig');
+env = config.get('env');
 
+let testingLocally = false;
+if (env.testing && env.testing === true) {
+  testingLocally = true;
+}
 let emailer = {};
 
-if (true) {
-  emailer = require('./emailer_ses');
+if (testingLocally) {
+
 } else {
-  emailer = require('./emailer_nodemailer');
+  if (true) {
+    emailer = require('./emailer_ses');
+  } else {
+    emailer = require('./emailer_nodemailer');
+  }
+  
 }
 
 function generateVerificationCode()
@@ -43,8 +53,13 @@ function sendVerificationMessage(userId, email, first_name, verificationCode)
     please click the following link to verify your email address:</p>
     <p><a href="${hostConfig.URL}/verifyuser?userid=${userId}&verificationcode=${verificationCode}">
     ${hostConfig.URL}/verifyuser?userid=${userId}&verificationcode=${verificationCode}</a></p>`;
-
-  emailer.sendMail(from, to, subject, html, text);
+  
+  if (!testingLocally) {
+    emailer.sendMail(from, to, subject, html, text);
+  } else {
+    console.log("In testing mode, do not send:");
+    console.log(from, to, subject, html, text);
+  }
 }
 
 exports.sendVerificationMessage = sendVerificationMessage;
