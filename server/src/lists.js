@@ -103,6 +103,9 @@ class ShoppingList
   users = [];
   
   constructor() {}
+  hasItem(item) {
+    return this.items.indexOf(item) != -1;
+  }
 };
 exports.ShoppingList = ShoppingList;
 

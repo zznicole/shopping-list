@@ -223,7 +223,8 @@ app.post('/createlist', async function(req, res) {
 
 app.post('/rmlist', async function(req, res) {
   s = session.handleSession(req, res);
-  if (s.user) {
+  let list = odb.object(req.body.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     listidToRemove = req.body.listid;
     for (let i = 0; i < s.user.lists.length; ++i) {
       let list = s.user.lists[i];
@@ -258,8 +259,8 @@ app.post('/rmlist', async function(req, res) {
 app.get('/mapitems', async function(req, res) {
   console.log('/mapitems');
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.query.listid);
+  let list = odb.object(req.query.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     aggregator.mapAllItems(odb, list);
     console.log(list);
     res.json({code: 200});
@@ -273,7 +274,8 @@ app.get('/mapitems', async function(req, res) {
 app.get('/aggregatedlist', async function(req, res) {
   console.log('/aggregatedlist');
   s = session.handleSession(req, res);
-  if (s.user) {
+  let list = odb.object(req.query.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     // get from query string (from client's browser setting)
     let userLocale = req.query.locale;
     // if user has some preferences for this app, use that instead
@@ -290,7 +292,6 @@ app.get('/aggregatedlist', async function(req, res) {
       uncheckedFirst = req.query.uncheckedfirst;
     }
     
-    let list = odb.object(req.query.listid);
     // Classify all items to category
     aggregator.mapAllItems(odb, list);
     
@@ -398,8 +399,8 @@ app.get('/aggregatedlist', async function(req, res) {
 app.get('/getlist', async function(req, res) {
   console.log('/getlist');
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.query.listid);
+  let list = odb.object(req.query.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     let uncheckedFirst = false;
     if (req.query.uncheckedfirst !== undefined) {
       uncheckedFirst = req.query.uncheckedfirst;
@@ -458,8 +459,8 @@ app.post('/editlist', async function(req, res) {
   console.log('/editlist');
   console.log(req.body);
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.body.listid);
+  let list = odb.object(req.body.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     list.summary = req.body.summary ? req.body.summary : "";
     list.description = req.body.description ? req.body.description : "";
     list.done = req.body.done ? req.body.done : "";
@@ -474,8 +475,8 @@ app.post('/editlist', async function(req, res) {
 
 app.post('/newitem', async function(req, res) {
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.body.listid);
+  let list = odb.object(req.body.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     lists.createItems(req.body.summary, req.body.description, defaultCategory,
   function (items) {
     if (items.length > 0) {
@@ -494,10 +495,11 @@ app.post('/newitem', async function(req, res) {
 
 app.post('/rmitem', async function(req, res) {
   s = session.handleSession(req, res);
-  if (s.user) {
+  let list = odb.object(req.body.listid);
+  let item = odb.object(req.body.itemid);
+  if (s.user && !!list && !!item && s.user.hasAccess([list]) && list.hasItem(item)) {
     console.log("/rmitem: ");
     console.log(req.body);
-    let list = odb.object(req.body.listid);
     let item = odb.object(req.body.itemid);
     for (let i = 0; i < list.items.length; ++i) {
       if (item === list.items[i]) {
@@ -515,8 +517,9 @@ app.post('/rmitem', async function(req, res) {
 
 app.post('/edititem', async function(req, res) {
   s = session.handleSession(req, res);
-  if (s.user) {
-    let item = odb.object(req.body.itemid);
+  let list = odb.object(req.body.listid);
+  let item = odb.object(req.body.itemid);
+  if (s.user && !!list && !!item && s.user.hasAccess([list]) && list.hasItem(item)) {
     item.summary = req.body.summary;
     item.description = "";
     item.done = req.body.isCompleted;
@@ -533,8 +536,8 @@ app.post('/sharelist', async function(req, res) {
   console.log('sharelist');
   console.log(req.body);
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.body.listid);
+  let list = odb.object(req.body.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     // Only owner can share
     console.log("List owner: " + list.owner.userId);
     console.log("User: " + s.user.userId.userId);
@@ -583,8 +586,8 @@ app.post('/sharelistbyid', async function(req, res) {
   console.log('sharelist');
   console.log(req.body);
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.body.listid);
+  let list = odb.object(req.body.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     let otherUserId = odb.object(req.body.userid);
     // Only owner can share
     console.log("List owner: " + list.owner.userId);
@@ -659,8 +662,8 @@ app.get('/getshares', async function(req, res) {
   console.log('getshares');
   console.log(req.query);
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.query.listid);
+  let list = odb.object(req.query.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     // Only owner can see shares
     if (list.owner == s.user.userId) {
       items = [];
@@ -697,8 +700,8 @@ app.post('/rmshare', async function(req, res) {
   console.log('rmshare');
   console.log(req.body);
   s = session.handleSession(req, res);
-  if (s.user) {
-    let list = odb.object(req.body.listid);
+  let list = odb.object(req.body.listid);
+  if (s.user && !!list && s.user.hasAccess([list])) {
     // Only owner can share
     console.log("List owner: " + list.owner.userId);
     console.log("User: " + s.user.userId.userId);

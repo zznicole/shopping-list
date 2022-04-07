@@ -152,7 +152,7 @@ export default function TobuyListScreen() {
       let tobuy = list.items[i];
       if (tobuy.itemid === id) {
         axios
-          .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
+          .post(apiBaseUrl + "edititem", {listid: listid, itemid: id, isCompleted: !tobuy.isCompleted, summary:tobuy.title})
           .then(function (response) {
             fetchList();
           }).catch(reason => {
@@ -172,7 +172,7 @@ export default function TobuyListScreen() {
       let tobuy = list.items[i];
       if (tobuy.itemid === id) {
         axios
-          .post(apiBaseUrl + "edititem", {itemid: id, isCompleted: tobuy.isCompleted, summary:newTitle})
+          .post(apiBaseUrl + "edititem", {listid: listid, itemid: id, isCompleted: tobuy.isCompleted, summary:newTitle})
           .then(function (response) {
             fetchList();
           }).catch(reason => {

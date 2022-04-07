@@ -40,6 +40,15 @@ class User {
   isAdmin() {
     return this.permissions.includes(admin);
   }
+  
+  hasAccess(lists) {
+    for (let list of lists) {
+      if (this.lists.indexOf(list) == -1) {
+        return false;
+      }
+    }
+    return true;
+  }
 };
 
 exports.User = User;
@@ -240,3 +249,4 @@ function purgeOldUnverifiedUsers()
     delete unverifiedUsers[uid];
   }
 }
+
