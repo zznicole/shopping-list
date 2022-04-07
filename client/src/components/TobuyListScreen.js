@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography, Input, FormControl, Fab } from '@material-ui/core';
 import { Home, Share, Category, FormatListBulleted, Sort, Reorder } from '@material-ui/icons'
 import Box from '@material-ui/core/Box';
+import Editable from "./Editable";
 
 const apiBaseUrl = "/";
 
@@ -45,10 +46,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 let fetchingList = false;
+let editingTitle = false;
 
 export default function TobuyListScreen() {
   const classes = useStyles();
   const [list, setList] = useState({summary: "",items:[], isOwn: false, isShared:false, shareCount:0, owner:"", aggregated:false});
+  const [newTitle, setNewTitle ] = useState("");
   const { listid } = useParams();
   const history = useHistory();
   
@@ -67,6 +70,7 @@ export default function TobuyListScreen() {
           fetchingList = true;
           if (response.data.result) {
             setList(response.data.result);
+            setNewTitle(response.data.result.summary);
           }
         } catch (e) {
           console.log(e);
@@ -81,6 +85,9 @@ export default function TobuyListScreen() {
   }
   
   useEffect(() => {
+    if (editingTitle) {
+      return;
+    }
     if (!fetchingList) {
       fetchList();
     } else {
@@ -274,21 +281,13 @@ export default function TobuyListScreen() {
   return (
     <div>
       <AppBar position="fixed" style={{backgroundColor:"#00bcd4"}}>
-        <form onSubmit={listTitleSubmitHandler} className={classes.listTitleInputContainer}>
-          <FormControl fullWidth={true} style={{textAlign: 'center'}}>
-            <Input
-              label="Type list title here"
-              required={true}
-              value={list.summary}
-              onChange={(e) => editList(e.target.value)}
-              onSave={onSave}
-              className={classes.hearder}
-              BorderBottom={false}
-              style={{ flex: 1, width:'100%', minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-//              style={{ marginBottom: 6, textAlign: 'center'}}
-            />
-          </FormControl>
-        </form>
+        <Editable className={classes.header} text={newTitle} type="input" callback={(value)=> {editingTitle=value;}} style={{ flex: 1, width:'100%', minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textAlign:'center', margin:6 }}>
+        <Input variant="h1" type="text" name="title" value={newTitle} fullWidth={true}
+               style={{ flex: 1, width:'50%', minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textAlign:'center', margin:6 }}
+               onChange={e => { setNewTitle(e.target.value); }}
+               onBlur={e => editList(e.target.value)}
+        />
+        </Editable>
       </AppBar>
       <Toolbar />
       <TobuyForm addTobuy={addTobuy}  />

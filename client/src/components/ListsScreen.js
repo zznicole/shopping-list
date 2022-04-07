@@ -7,6 +7,7 @@ import { Typography, AppBar, Toolbar, Button, Fab, IconButton } from '@material-
 import { Add, SupervisorAccount } from '@material-ui/icons';
 import axios from "axios";
 import { useHistory, Link } from 'react-router-dom';
+const moment = require('moment')
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -132,7 +133,7 @@ export default function ListScreen() {
   
   // Add a list
   const addList = (event) => {
-    createList("Type in a list name");
+    createList("Shopping on " + moment().format('dddd D MMMM'));
   };
   const goToList = (id) => {
     history.push('/list/'+id);
