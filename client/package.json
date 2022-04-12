@@ -21,6 +21,7 @@
     "react-contenteditable": "^3.3.5",
     "react-dom": "^16.14.0",
     "react-editext": "^3.17.1",
+    "react-google-recaptcha": "^2.1.0",
     "react-intl": "^5.12.5",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",

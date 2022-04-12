@@ -22,9 +22,12 @@ const lists = require('./src/lists.js');
 const userid = require('./src/userid.js');
 const admin = require('./src/admin.js');
 
+const axios = require('axios');
+
 dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
 sslConfig = config.get('ssl');
+recaptchaConfig = config.get('recaptcha');
 
 dboo.init();
 
@@ -59,6 +62,7 @@ let sslOptions = hostConfig.useSSL == false ? {} : {
    key: fs.readFileSync(sslConfig.key),
    cert: fs.readFileSync(sslConfig.cert)
 };
+var recaptchaKeys = JSON.parse(fs.readFileSync(recaptchaConfig.keyfile, 'utf8'));
 
 function createServer() {
   const httpApp = express();
@@ -129,13 +133,43 @@ app.post('/login', async function(req, res) {
 
 app.post('/signup', async function(req, res) {
   let s = session.handleSession(req, res);
-  let response = user.createUser(req.body.userid,
-                  req.body.email,
-                  req.body.first_name, 
-                  req.body.last_name,
-                  req.body.password, 
-                  odb);
-  res.json({code: response.code, message: response.message});
+  let response_key = req.body.recaptcha;
+  let secret_key = recaptchaKeys.secret;
+  const url =
+    `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${response_key}`;
+  
+  // Making POST request to verify captcha
+  axios.post(url,
+    {},
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
+      }
+    }).then((gres) => {
+      console.log(gres);
+      // google_response is the object return by
+      // google as a response
+      if (gres.data.success == true) {
+        //   if captcha is verified
+        console.log("recaptcha is good!");
+        let response = user.createUser(req.body.userid,
+          req.body.email,
+          req.body.first_name,
+          req.body.last_name,
+          req.body.password,
+          odb);
+        res.json({code: response.code, message: response.message});
+      } else {
+        console.log("recaptcha is bad!");
+        // if captcha is not verified
+        return res.send({ response: "Failed" });
+      }
+    })
+    .catch((error) => {
+      // Some error while verify captcha
+      console.log("something happend: ", error);
+      return res.json({ error });
+    });
 });
 
 app.get('/verifyuser', async function(req, res) {

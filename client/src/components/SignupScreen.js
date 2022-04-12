@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import { Typography } from '@material-ui/core';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const useStyles = makeStyles((theme) => ({
   screen: {
@@ -72,6 +73,7 @@ export default function SignupScreen(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [recaptchaResponse, setReCAPTCHA] = useState(false);
 
   const apiBaseUrl = "/";
 
@@ -84,6 +86,7 @@ export default function SignupScreen(props) {
       last_name: lastName,
       email: email,
       password: password,
+      recaptcha: recaptchaResponse
     };
     axios
       .post(apiBaseUrl + "signup", payload)
@@ -167,11 +170,16 @@ export default function SignupScreen(props) {
     backgroundColor="#FCF6B1"
   />
   <br />
+  <ReCAPTCHA
+    sitekey="6Lfu32cfAAAAACdXFdkxedBNOygTdsC1fSA7SIIo"
+    onChange={(recaptchaValue) => setReCAPTCHA(recaptchaValue)}
+  />,
   <Button
     className={classes.loginBtn}
     variant="contained"
     color="secondary"
     onClick={onClickHandler}
+    disabled={recaptchaResponse === false}
   >
     Sign Up
   </Button>
