@@ -16,6 +16,36 @@ if (env.testing && env.testing === true) {
 const admin = "admin";
 exports.admin = admin;
 
+class NotificationSettings {
+  constructor() {
+    this.emailOnShare = true;
+  }
+  emailOnShare = true;
+}
+exports.NotificationSettings = NotificationSettings;
+
+dboo.class(NotificationSettings,
+  [ {"emailOnShare": dboo.bool}
+  ]
+);
+
+class Preferences {
+  constructor() {
+    this.preferredLocale = "";
+    this.notificationSettings = new NotificationSettings();
+  }
+  preferredLocale = "";
+  notificationSettings = new NotificationSettings();
+}
+exports.Preferences = Preferences;
+
+dboo.class(Preferences,
+  [ {"preferredLocale": dboo.string},
+    {"notificationSettings": NotificationSettings}
+  ]
+);
+
+
 class User {
   userId = null;
   emailAddress = "";
@@ -25,7 +55,7 @@ class User {
   permissions = [];
   lists = [];
   friends = [];
-  preferred_locale = "";
+  preferences = new Preferences();
   
   constructor() {
     this.userId = null;
@@ -34,7 +64,7 @@ class User {
     this.lastName = "";
     this.permissions = [];
     this.lists = [];
-    this.preferred_locale = "";
+    this.preferences = new Preferences();
   }
   
   isAdmin() {
@@ -61,7 +91,7 @@ dboo.class(User,
    {"permissions": dboo.array(dboo.string)},
    {"lists": dboo.array(lists.ShoppingList)},
    {"friends": dboo.array(userid.UserId)},
-   {"preferred_locale": dboo.string},
+   {"preferences": Preferences},
   ]
 );
 

@@ -30,6 +30,10 @@ function define_types() {
   odb.define(user.User);
   console.log(user.UserPassword);
   odb.define(user.UserPassword);
+  console.log(user.NotificationSettings);
+  odb.define(user.NotificationSettings);
+  console.log(user.Preferences);
+  odb.define(user.Preferences);
   console.log(list.Category);
   odb.define(list.Category);
   console.log(list.ItemType);

@@ -21,6 +21,7 @@ const config = require('config');
 const lists = require('./src/lists.js');
 const userid = require('./src/userid.js');
 const admin = require('./src/admin.js');
+const sharing = require('./src/sharing.js');
 
 const axios = require('axios');
 
@@ -597,7 +598,10 @@ app.post('/sharelist', async function(req, res) {
         }
         if (s.user.friends.find(item => item === otherUser.userId) == undefined) {
           s.user.friends.push(otherUser.userId);
-        } 
+        }
+        if (otherUser.preferences.notificationSettings.emailOnShare) {
+          sharing.send_sharing_email(otherUser.emailAddress, otherUser, req.body.listid);
+        }
         odb.commit([s.user, otherUser, list]);
   
         res.json({code: 200, message: list.description + " shared with '" + otherUserId + "'!"});

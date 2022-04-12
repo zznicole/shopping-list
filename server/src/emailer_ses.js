@@ -40,7 +40,7 @@ function sendMail(from, to, subject, html, text) {
     ],
   };
   
-  console.log("Sending verification link to: " + to + ", using AWS SES.");
+  console.log("Sending email to: " + to + ", using AWS SES.");
   console.log(params);
 
   var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
