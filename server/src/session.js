@@ -106,24 +106,33 @@ function setSessionUser(session, user, keepLoggedIn) {
   }
 }
 
-function clearAllSessionsForUser(req, res) {
+function clearAllSessionsForUser(req, res, uid) {
   let sessionid = req.cookies.sessionId;
-  if (!(sessionid === undefined)) {
-    let s = sessions[sessionid];
-    if (s) {
-      let user = s.user;
-      let uid = user.userId.userId;
-      if (sessionByUserId.hasOwnProperty(uid)) {
-        let allUserSessions = sessionByUserId[uid];
-        for (let s of allUserSessions) {
-          delete sessions[s.sessionId];
+  try {
+    if (!(sessionid === undefined)) {
+      let s = sessions.hasOwnProperty(sessionid) && sessions[sessionid];
+      if (s) {
+        let user = s.user;
+        if (uid === undefined && user.userId) {
+          uid = user.userId.userId;
         }
-        delete sessionByUserId[uid];
+        if (uid && sessionByUserId.hasOwnProperty(uid)) {
+          let allUserSessions = sessionByUserId[uid];
+          for (let s of allUserSessions) {
+            delete sessions[s.sessionId];
+          }
+          delete sessionByUserId[uid];
+        }
       }
     }
+  } catch (e) {
+    console.log("Exception clearing session id: ", e);
   }
+  
   res.clearCookie('sessionId');
+  res.clearCookie('loggedIn');
 }
+
 
 exports.clearSession = clearSession;
 exports.handleSession = handleSession;

@@ -20,6 +20,7 @@ const session = require('./src/session.js');
 const config = require('config');
 const lists = require('./src/lists.js');
 const userid = require('./src/userid.js');
+const loginlink = require('./src/loginlink.js');
 const admin = require('./src/admin.js');
 const sharing = require('./src/sharing.js');
 
@@ -105,6 +106,8 @@ app.get('/newsession', async function(req, res) {
 
 app.get('/logout', async function(req, res) {
   session.clearAllSessionsForUser(req, res);
+  res.clearCookie('sessionId');
+  res.clearCookie('loggedIn');
 });
 
 app.post('/login', async function(req, res) {
@@ -128,8 +131,46 @@ app.post('/login', async function(req, res) {
       }
     } 
   }
+  session.clearAllSessionsForUser(req, res);
   res.status(401);
   res.json({code: 401, message: "error logging in"});
+});
+
+app.get('/login', async function(req, res) {
+  let s = session.handleSession(req, res);
+  let logintoken = req.query.token ? req.query.token : "";
+  let decodedToken = loginlink.verifyToken(logintoken);
+  if (decodedToken) {
+    let userid = decodedToken.uid;
+    let keepLoggedIn = decodedToken.keepLoggedIn;
+    console.log("User " + userid + " logged in");
+    let usr = user.findUser(odb, userid);
+    console.log(usr);
+    if (usr) {
+      session.setSessionUser(s, usr, keepLoggedIn);
+      s.keepLoggedIn = keepLoggedIn;
+      console.log(s.user);
+      res.cookie('loggedIn', true);
+      res.redirect(303, hostConfig.URL );
+      return;
+    }
+  }
+  session.clearAllSessionsForUser(req, res);
+  res.redirect(303, hostConfig.URL  + "/verify/loginlinkfailed");
+});
+
+app.post('/loginlink', async function(req, res) {
+  let s = session.handleSession(req, res);
+  let userid = req.body.userid ? req.body.userid : "";
+  let keepLoggedIn = req.body.keepLoggedIn ? req.body.keepLoggedIn : false;
+  let ok = user.sendLoginLink(odb, userid, keepLoggedIn);
+  session.clearAllSessionsForUser(req, res);
+  if (ok) {
+    res.json({code: 200, message: "Logged in"});
+  } else {
+    res.status(401);
+    res.json({code: 401, message: "Failed sending login link."});
+  }
 });
 
 app.post('/signup', async function(req, res) {
@@ -191,7 +232,7 @@ app.get('/listsessions', async function(req, res) {
   s = session.handleSession(req, res);
   if (s.user && s.user.isAdmin()) {
     let allSessions = session.getSessions();
-    res.json({code: 200, result: allSessions});
+  res.json({code: 200, result: allSessions});
   } else {
     res.status(401);
     res.json({code: 401, message: "no access"});

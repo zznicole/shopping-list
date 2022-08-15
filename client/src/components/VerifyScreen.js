@@ -68,8 +68,11 @@ export default function VerifyScreen() {
     title = "Congratulations!";
     message = "Your account registration is complete and you can now start to use ourshoppinglist!";
   } else if (status === 'failure') {
-    title = "Error!";
+    title = "Error verifying account!";
     message = "Something went wrong, we were not able to verify your account.";
+  } else if (status === 'loginlinkfailed') {
+    title = "Error logging in!";
+    message = "The link is either expired or in other ways invalid. Try requesting a new login link.";
   }
   
   return (

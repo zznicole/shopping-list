@@ -74,7 +74,7 @@ export default function LoginScreen(props) {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState();
+  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const history = useHistory();
 
   const apiBaseUrl = "/";
@@ -87,11 +87,11 @@ export default function LoginScreen(props) {
     history.push("/lists");
   }
 
-  const onClickHandler = (event) => {
+  const onUsePasswordHandler = (event) => {
     let payload = {
       userid: username,
       password: password,
-      keepLoggedIn: true,
+      keepLoggedIn: keepLoggedIn,
     };
     axios
       .post(apiBaseUrl + "login", payload)
@@ -110,7 +110,29 @@ export default function LoginScreen(props) {
         console.log(error);
       });
   };
-
+  
+  const onUseLinkHandler = (event) => {
+    let payload = {
+      userid: username,
+      keepLoggedIn: keepLoggedIn,
+    };
+    axios
+      .post(apiBaseUrl + "loginlink", payload)
+      .then(function (response) {
+        console.log(response);
+        if (response.status === 200) {
+          alert("Link sent, check your email!");
+          history.push("/");
+        } else if (response.status === 401) {
+          alert(response.message);
+          history.push("/");
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+  
   return (
     <div className={classes.screen}>
       <Container className={classes.formContainer}>
@@ -134,6 +156,15 @@ export default function LoginScreen(props) {
               onChange={(e) => setUsername(e.target.value)}
             />
             <br />
+            <Button
+              className={classes.loginBtn}
+              variant="outlined"
+              color="secondary"
+              onClick={onUseLinkHandler}
+            >
+              Send login link
+            </Button>
+            <br />or use password...<br />
             <TextField
               type="password"
               required
@@ -145,6 +176,15 @@ export default function LoginScreen(props) {
               onChange={(e) => setPassword(e.target.value)}
               backgroundColor="#FCF6B1"
             />
+            <br />
+            <Button
+              className={classes.loginBtn}
+              variant="outlined"
+              color="secondary"
+              onClick={onUsePasswordHandler}
+            >
+              LOG IN
+            </Button>
             <Link
               className={classes.forgotPasswoodBtn}
               to="/passwordresetrequest"
@@ -152,15 +192,6 @@ export default function LoginScreen(props) {
             >
               Forgot Your Password?
             </Link>
-            <br />
-            <Button
-              className={classes.loginBtn}
-              variant="outlined"
-              color="secondary"
-              onClick={onClickHandler}
-            >
-              LOG IN
-            </Button>
             <br />
             <FormControlLabel
               control={

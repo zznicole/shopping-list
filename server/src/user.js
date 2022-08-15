@@ -1,6 +1,7 @@
 const dboo = require('dboo');
 const crypto = require('crypto');
 const verification = require('./verification.js');
+const loginlink = require('./loginlink.js');
 const lists = require('./lists.js');
 const userid = require('./userid.js');
 const moment = require('moment')
@@ -140,6 +141,34 @@ function passwordMatches(upwd, clearTextPasswordAttempt) {
 }
 exports.passwordMatches = passwordMatches;
 
+function random_string(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_+=abcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() *
+      charactersLength));
+  }
+  return result;
+}
+/// Login links
+function sendLoginLink(odb, userid, keepLoggedIn)
+{
+  console.log("sendLoginLink: find user");
+  let usr = findUser(odb, userid);
+  if (usr) {
+    console.log("sendLoginLink: user found");
+    let firstName = usr.firstName;
+    let email = usr.emailAddress;
+    loginlink.sendLoginMessage(userid, email, firstName, keepLoggedIn);
+    return true;
+  } else {
+    console.log("sendLoginLink: user not found");
+  
+    return false;
+  }
+}
+exports.sendLoginLink = sendLoginLink;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// When creating a user it will first reside in an in-memory map only. A verification email is sent and once
@@ -235,11 +264,11 @@ function findUser(odb, userName) {
     let usr = users[0];
     return usr;
   }
-  if (users.length = 0) {
-    console.log("User " + userId + " not found!");
+  if (users.length == 0) {
+    console.log("User " + userName + " not found!");
   }
   if (users.length > 1) {
-    console.log("Multiple user " + userId + " found!");
+    console.log("Multiple user " + userName + " found!");
   }
   return false;
 }
