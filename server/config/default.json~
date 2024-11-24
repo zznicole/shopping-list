@@ -1,0 +1,27 @@
+{
+  "dbConfig": {
+    "host": "localhost",
+    "port": 8822,
+    "dbName": "ourshoppinglist",
+    "dbGroup": "ourshoppinglist",
+    "webUserName": "ourshoppinglist",
+    "webUserPwd": "pwd"
+  },
+  "hostConfig": {
+    "useSSL": false,
+    "URL": "http://localhost",
+    "host": "localhost",
+    "port": "443",
+    "httpPort": "80"
+  },
+  "ssl": {
+    "cert": "/etc/letsencrypt/live/ourshoppinglist.online/fullchain.pem",
+    "key": "/etc/letsencrypt/live/ourshoppinglist.online/privkey.pem"
+  },
+  "env": {
+    "testing": true
+  },
+  "recaptcha": {
+    "keyfile": "./config/recaptcha.keys"
+  }
+}
