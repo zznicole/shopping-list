@@ -110,7 +110,7 @@ export default function LoginScreen(props) {
         console.log(error);
       });
   };
-  
+
   const onUseLinkHandler = (event) => {
     let payload = {
       userid: username,
@@ -132,7 +132,7 @@ export default function LoginScreen(props) {
         console.log(error);
       });
   };
-  
+
   return (
     <div className={classes.screen}>
       <Container className={classes.formContainer}>
@@ -179,7 +179,7 @@ export default function LoginScreen(props) {
             <br />
             <Button
               className={classes.loginBtn}
-              variant="outlined"
+              variant="contained"
               color="secondary"
               onClick={onUsePasswordHandler}
             >
@@ -209,7 +209,7 @@ export default function LoginScreen(props) {
             <Link to="/signup" style={{ textDecoration: "none" }}>
               <Button
                 className={classes.signupBtn}
-                variant="contained"
+                variant="outlined"
                 color="secondary"
               >
                 SIGN UP

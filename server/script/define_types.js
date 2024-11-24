@@ -22,6 +22,7 @@ dboo.init();
 /// updated.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function define_types() {
+  console.log(dbConfig);
   const odb = new dboo.ODB();
   odb.connect(host, port, dbName, webUserName, webUserPwd);
   

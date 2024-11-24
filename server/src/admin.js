@@ -1,4 +1,4 @@
-const disk = require('diskusage');
+//const disk = require('diskusage');
 const os = require('os');
 const user = require('./user.js');
 const session = require('./session.js');
@@ -61,7 +61,8 @@ function getStats(odb) {
     let numUsers = odb.query('count<UserId>()');
     let numLists = odb.query('count<ShoppingList>()');
     let numItems = odb.query('count<Item>()');
-    let diskInfo = disk.checkSync('/');
+    //let diskInfo = disk.checkSync('/');
+    let diskInfo = {available:0,free:0,total:0};
     let unverifiedInfo = user.numberOfUnverifiedUsers();
     let numSessions = session.numberOfSessions();
     let memUse = {}
