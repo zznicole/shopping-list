@@ -1,6 +1,6 @@
 const dboo = require("dboo");
 const lists = require('./lists.js');
-const snowball = require('node-snowball');
+//const snowball = require('node-snowball');
 const fs = require('fs');
 
 class Config {
@@ -26,7 +26,7 @@ class Word extends lists.ItemType {
     this.stems = [];
     for (let i = 0; i < translations.length; ++i) {
       if (languages[i] && languages[i].trim().length > 0) {
-        this.stems.push( snowball.stemword(translations[i], languages[i]));
+//        this.stems.push( snowball.stemword(translations[i], languages[i]));
       }
     }
   }
@@ -102,7 +102,7 @@ function findCategory(odb, text) {
   let stems = new Set();
   for (let l of cfg.languages) {
     for (let itm of words) {
-      stems.add(snowball.stemword(itm, l));
+//      stems.add(snowball.stemword(itm, l));
     }
   }
   

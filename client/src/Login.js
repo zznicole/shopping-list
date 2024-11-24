@@ -1,5 +1,5 @@
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from '@material-ui/core/Button';
 import TextField from "material-ui/TextField";
 import React, { Component } from "react";
 import axios from "axios";
@@ -70,12 +70,12 @@ class Login extends Component {
         <MuiThemeProvider>
           <CssBaseline />
           <div >
-            
+
             <div style={{
-        position: 'absolute', left: '50%', top: '40%',
-        transform: 'translate(-50%, -50%)'
-    }}>
-            
+              position: 'absolute', left: '50%', top: '40%',
+              transform: 'translate(-50%, -50%)'
+            }}>
+
               <TextField
                 hintText="Enter your Username"
                 id="standard-basic"
@@ -100,7 +100,7 @@ class Login extends Component {
                 }
               />
               <br />
-              <RaisedButton
+              <Button variant="contained"
                 label="LOG IN"
                 primary={true}
                 style={style}
@@ -120,5 +120,5 @@ class Login extends Component {
   }
 }
 
-const style = { margin: 15 };
+const style = { margin: 15, };
 export default withStyles(styles)(withRouter(Login));
