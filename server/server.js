@@ -30,6 +30,11 @@ dbConfig = config.get('dbConfig');
 hostConfig = config.get('hostConfig');
 sslConfig = config.get('ssl');
 recaptchaConfig = config.get('recaptcha');
+env = config.get('env');
+let test_without_recaptcha = false;
+if (env.testing && env.testing === true) {
+  test_without_recaptcha = true;
+}
 
 dboo.init();
 
@@ -191,7 +196,7 @@ app.post('/signup', async function(req, res) {
       console.log(gres);
       // google_response is the object return by
       // google as a response
-      if (gres.data.success == true) {
+      if (gres.data.success == true|test_without_recaptcha) {
         //   if captcha is verified
         console.log("recaptcha is good!");
         let response = user.createUser(req.body.userid,

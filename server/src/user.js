@@ -4,8 +4,9 @@ const verification = require('./verification.js');
 const loginlink = require('./loginlink.js');
 const lists = require('./lists.js');
 const userid = require('./userid.js');
-const moment = require('moment')
-
+const moment = require('moment');
+const config = require('config');
+env = config.get('env');
 let testingLocally = false;
 if (env.testing && env.testing === true) {
   testingLocally = true;
